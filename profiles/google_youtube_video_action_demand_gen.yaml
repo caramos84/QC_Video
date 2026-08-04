@@ -1,0 +1,30 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: google_youtube_video_action_demand_gen
+platform: Google
+channel: YouTube
+placement: Video action / Demand Gen
+technical:
+  aspect_ratios:
+  - '1:1'
+  - '16:9'
+  - '4:5'
+  - '9:16'
+  aspect_ratio_recommended: '16:9'
+  resolution_min: null
+  resolution_recommended:
+  - 1920
+  - 1080
+  duration_min_s: 5
+  duration_max_s: null
+  max_file_size_mb: 262144
+  codecs: null
+  containers:
+  - MPG
+  frame_rate: null
+  bitrate_kbps: null
+  captions_required: false
+  safe_zone_notes: null
+  audio: puede correr sin sonido, no obligatorio
+source_url: https://support.google.com/google-ads/answer/17141078
+notes: min 10s para elegibilidad in-stream; recomendado >15s

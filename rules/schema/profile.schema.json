@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://qc-video/schema/profile.schema.json",
+  "title": "QC Video channel/placement profile",
+  "description": "Technical constraints for one platform+placement, sourced from context/matriz_medios.json. Hand-editing is discouraged - regenerate via rules/tools/build_profiles_from_matriz.py.",
+  "type": "object",
+  "required": ["schema_version", "profile_id", "platform", "channel", "placement", "technical"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "profile_id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+    "platform": { "type": "string" },
+    "channel": { "type": "string" },
+    "placement": { "type": "string" },
+    "source_url": { "type": ["string", "null"], "format": "uri" },
+    "notes": { "type": ["string", "null"] },
+    "technical": {
+      "type": "object",
+      "description": "Fields mirror context/matriz_medios.json entries. Null means the official source does not publish that constraint - engine must treat as NOT_EVALUATED, never as 'no limit'.",
+      "additionalProperties": true,
+      "properties": {
+        "aspect_ratios": { "type": ["array", "null"], "items": { "type": "string" } },
+        "aspect_ratio_recommended": { "type": ["string", "null"] },
+        "resolution_min": {
+          "type": ["array", "null"],
+          "items": { "type": ["number", "null"] },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "resolution_recommended": {
+          "type": ["array", "null"],
+          "items": { "type": ["number", "null"] },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "duration_min_s": { "type": ["number", "null"] },
+        "duration_max_s": { "type": ["number", "null"] },
+        "max_file_size_mb": { "type": ["number", "null"] },
+        "codecs": { "type": ["array", "null"], "items": { "type": "string" } },
+        "containers": { "type": ["array", "null"], "items": { "type": "string" } },
+        "frame_rate": {},
+        "bitrate_kbps": {},
+        "captions_required": {},
+        "safe_zone_notes": { "type": ["string", "null"] },
+        "audio": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

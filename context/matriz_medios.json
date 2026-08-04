@@ -1,0 +1,912 @@
+{
+  "_meta": {
+    "description": "Matriz de specs técnicos de video por plataforma/placement, para alimentar el Motor de reglas QC (Notebook 04). Ver matriz_medios.md para tablas legibles, notas y fuentes completas.",
+    "fecha_investigacion": "2026-08-04",
+    "convencion_null": "null significa que la fuente oficial consultada no publica ese dato (verificado por fetch directo), no que falte investigación.",
+    "unidades": {
+      "duration": "segundos",
+      "max_file_size_mb": "megabytes",
+      "resolution": "pixeles [ancho, alto]",
+      "bitrate_kbps": "kilobits por segundo"
+    }
+  },
+  "placements": [
+    {
+      "platform": "Meta",
+      "channel": "Facebook",
+      "placement": "Feed",
+      "aspect_ratios": [
+        "4:5"
+      ],
+      "aspect_ratio_recommended": "4:5",
+      "resolution_min": [
+        120,
+        120
+      ],
+      "resolution_recommended": [
+        1440,
+        1800
+      ],
+      "duration_min_s": 1,
+      "duration_max_s": 14460,
+      "max_file_size_mb": 4000,
+      "codecs": [
+        "H.264"
+      ],
+      "containers": [
+        "MP4",
+        "MOV",
+        "GIF"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": "AAC estéreo >=128kbps, opcional",
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video"
+    },
+    {
+      "platform": "Meta",
+      "channel": "Instagram",
+      "placement": "Feed",
+      "aspect_ratios": [
+        "9:16"
+      ],
+      "aspect_ratio_recommended": "9:16",
+      "resolution_min": [
+        250,
+        null
+      ],
+      "resolution_recommended": [
+        1080,
+        1920
+      ],
+      "duration_min_s": 1,
+      "duration_max_s": 3600,
+      "max_file_size_mb": 4000,
+      "codecs": [
+        "H.264"
+      ],
+      "containers": [
+        "MP4",
+        "MOV",
+        "GIF"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": "opcional",
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video/instagram-feed"
+    },
+    {
+      "platform": "Meta",
+      "channel": "Facebook",
+      "placement": "Stories",
+      "aspect_ratios": [
+        "9:16"
+      ],
+      "aspect_ratio_recommended": "9:16",
+      "resolution_min": [
+        250,
+        null
+      ],
+      "resolution_recommended": [
+        1440,
+        2560
+      ],
+      "duration_min_s": 1,
+      "duration_max_s": 180,
+      "max_file_size_mb": 4000,
+      "codecs": [
+        "H.264"
+      ],
+      "containers": [
+        "MP4",
+        "MOV",
+        "GIF"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": "~14% margen superior, ~20% margen inferior",
+      "audio": "AAC estéreo >=128kbps",
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video/facebook-story"
+    },
+    {
+      "platform": "Meta",
+      "channel": "Instagram",
+      "placement": "Stories",
+      "aspect_ratios": [
+        "9:16"
+      ],
+      "aspect_ratio_recommended": "9:16",
+      "resolution_min": [
+        250,
+        null
+      ],
+      "resolution_recommended": [
+        1440,
+        2560
+      ],
+      "duration_min_s": 1,
+      "duration_max_s": 3600,
+      "max_file_size_mb": 4000,
+      "codecs": [
+        "H.264"
+      ],
+      "containers": [
+        "MP4",
+        "MOV",
+        "GIF"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": "~14% top, 35% bottom, 6% cada lado",
+      "audio": "AAC estéreo >=128kbps",
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video/instagram-story"
+    },
+    {
+      "platform": "Meta",
+      "channel": "Facebook",
+      "placement": "Reels",
+      "aspect_ratios": [
+        "9:16"
+      ],
+      "aspect_ratio_recommended": "9:16",
+      "resolution_min": null,
+      "resolution_recommended": [
+        1440,
+        2560
+      ],
+      "duration_min_s": null,
+      "duration_max_s": null,
+      "max_file_size_mb": 4000,
+      "codecs": [
+        "H.264"
+      ],
+      "containers": [
+        "MP4",
+        "MOV",
+        "GIF"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": "~14% top, 35% bottom, 6% cada lado",
+      "audio": "AAC estéreo >=128kbps, muy recomendado",
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video/facebook-facebook-reels"
+    },
+    {
+      "platform": "Meta",
+      "channel": "Instagram",
+      "placement": "Reels",
+      "aspect_ratios": [
+        "9:16"
+      ],
+      "aspect_ratio_recommended": "9:16",
+      "resolution_min": [
+        250,
+        null
+      ],
+      "resolution_recommended": [
+        1440,
+        2560
+      ],
+      "duration_min_s": 0,
+      "duration_max_s": 900,
+      "max_file_size_mb": 4000,
+      "codecs": [
+        "H.264"
+      ],
+      "containers": [
+        "MP4",
+        "MOV"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": "~14% top, 35% bottom, 6% cada lado; mín ancho 500px si dura >=30s",
+      "audio": "AAC estéreo >=128kbps, muy recomendado",
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video/instagram-reels"
+    },
+    {
+      "platform": "Meta",
+      "channel": "Facebook",
+      "placement": "In-Stream Video",
+      "aspect_ratios": [
+        "16:9",
+        "1:1"
+      ],
+      "aspect_ratio_recommended": "16:9",
+      "resolution_min": [
+        1080,
+        1080
+      ],
+      "resolution_recommended": null,
+      "duration_min_s": 5,
+      "duration_max_s": 600,
+      "max_file_size_mb": 4000,
+      "codecs": [
+        "H.264"
+      ],
+      "containers": [
+        "MP4",
+        "MOV",
+        "GIF"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": "AAC estéreo >128kbps",
+      "notes": "Desktop 5-15s; mobile 5s-10min",
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video/facebook-instream-video"
+    },
+    {
+      "platform": "TikTok",
+      "channel": "TikTok",
+      "placement": "In-Feed Ads (Auction)",
+      "aspect_ratios": [
+        "9:16",
+        "16:9",
+        "1:1"
+      ],
+      "aspect_ratio_recommended": "9:16",
+      "resolution_min": [
+        540,
+        960
+      ],
+      "resolution_recommended": null,
+      "duration_min_s": null,
+      "duration_max_s": 600,
+      "max_file_size_mb": 500,
+      "codecs": null,
+      "containers": [
+        "MP4",
+        "MOV",
+        "MPEG",
+        "3GP",
+        "AVI"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": 516,
+      "captions_required": false,
+      "safe_zone_notes": "zonas seguras descargables, no cuantificadas en px por la fuente",
+      "audio": "obligatorio (todo creativo debe tener sonido)",
+      "source_url": "https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads"
+    },
+    {
+      "platform": "TikTok",
+      "channel": "TikTok",
+      "placement": "In-Feed Reach & Frequency",
+      "aspect_ratios": [
+        "9:16",
+        "16:9",
+        "1:1"
+      ],
+      "aspect_ratio_recommended": "9:16",
+      "resolution_min": [
+        540,
+        960
+      ],
+      "resolution_recommended": null,
+      "duration_min_s": 5,
+      "duration_max_s": 60,
+      "max_file_size_mb": 500,
+      "codecs": null,
+      "containers": [
+        "MP4",
+        "MOV",
+        "MPEG",
+        "3GP",
+        "AVI"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": 2500,
+      "captions_required": false,
+      "safe_zone_notes": "zonas seguras descargables, no cuantificadas en px por la fuente",
+      "audio": "obligatorio",
+      "source_url": "https://ads.tiktok.com/help/article/tiktok-reservation-in-feed-ads-reach-frequency"
+    },
+    {
+      "platform": "TikTok",
+      "channel": "TikTok",
+      "placement": "TopView / Brand Takeover",
+      "aspect_ratios": [
+        "9:16"
+      ],
+      "aspect_ratio_recommended": "9:16",
+      "resolution_min": [
+        540,
+        960
+      ],
+      "resolution_recommended": null,
+      "duration_min_s": 5,
+      "duration_max_s": 60,
+      "max_file_size_mb": 500,
+      "codecs": null,
+      "containers": [
+        "MP4",
+        "MOV",
+        "MPEG",
+        "3GP"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": 2500,
+      "captions_required": "recomendado, max 100 caracteres / 4 líneas (50 car. CN/JP/KR)",
+      "safe_zone_notes": "initial-stage (primeros 3s, zoom-in takeover) vs feed-stage; evitar blanco puro en primeros 3s",
+      "audio": "obligatorio, evitar sonidos abruptos en primeros 3s",
+      "notes": "recomendado 9-15s",
+      "source_url": "https://ads.tiktok.com/help/article/tiktok-reservation-topview"
+    },
+    {
+      "platform": "Google",
+      "channel": "GDN",
+      "placement": "Responsive Display (video via YouTube link)",
+      "aspect_ratios": [
+        "16:9",
+        "1:1",
+        "2:3"
+      ],
+      "aspect_ratio_recommended": "16:9",
+      "resolution_min": null,
+      "resolution_recommended": null,
+      "duration_min_s": null,
+      "duration_max_s": null,
+      "max_file_size_mb": null,
+      "codecs": null,
+      "containers": null,
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": null,
+      "notes": "no se sube archivo directo, hereda specs de YouTube via link; duración libre, recomendado 30s",
+      "source_url": "https://support.google.com/google-ads/answer/17090561"
+    },
+    {
+      "platform": "Google",
+      "channel": "GDN/DV360",
+      "placement": "In-banner video (HTML5)",
+      "aspect_ratios": [
+        "4:3"
+      ],
+      "aspect_ratio_recommended": "4:3",
+      "resolution_min": null,
+      "resolution_recommended": [
+        4096,
+        4096
+      ],
+      "duration_min_s": null,
+      "duration_max_s": 240,
+      "max_file_size_mb": 2.2,
+      "codecs": null,
+      "containers": null,
+      "frame_rate": 14,
+      "frame_rate_recommended": 30,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": "volumen codificado <= -12dB",
+      "notes": "animación de apertura <=30s; carga inicial <=40KB",
+      "source_url": "https://support.google.com/displayvideo/answer/6006843"
+    },
+    {
+      "platform": "Google",
+      "channel": "YouTube",
+      "placement": "In-stream skippable",
+      "aspect_ratios": [
+        "16:9",
+        "9:16",
+        "1:1"
+      ],
+      "aspect_ratio_recommended": "16:9",
+      "resolution_min": [
+        1280,
+        720
+      ],
+      "resolution_recommended": [
+        1920,
+        1080
+      ],
+      "duration_min_s": 12,
+      "duration_max_s": 360,
+      "max_file_size_mb": 262144,
+      "codecs": [
+        "H.264",
+        "MPEG-2",
+        "MPEG-4",
+        "HEVC"
+      ],
+      "containers": [
+        "MP4",
+        "MPG",
+        "WMV",
+        "AVI",
+        "MOV",
+        "FLV",
+        "WebM"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": "debe ir embebido en el video, no se aceptan archivos solo-audio",
+      "notes": "sin min/max general para compra auction; reserva: min 12s, max 6min",
+      "source_url": "https://support.google.com/google-ads/answer/6055025"
+    },
+    {
+      "platform": "Google",
+      "channel": "YouTube",
+      "placement": "In-stream non-skippable",
+      "aspect_ratios": [
+        "16:9",
+        "4:3",
+        "9:16",
+        "2:3",
+        "1:1"
+      ],
+      "aspect_ratio_recommended": "16:9",
+      "resolution_min": [
+        720,
+        480
+      ],
+      "resolution_recommended": [
+        1920,
+        1080
+      ],
+      "duration_min_s": 7,
+      "duration_max_s": 15,
+      "max_file_size_mb": 262144,
+      "codecs": [
+        "H.264",
+        "MPEG-2",
+        "MPEG-4"
+      ],
+      "containers": [
+        "MP4",
+        "MPG"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": null,
+      "source_url": "https://support.google.com/google-ads/answer/11462260"
+    },
+    {
+      "platform": "Google",
+      "channel": "YouTube",
+      "placement": "Non-skippable 30s (CTV)",
+      "aspect_ratios": [
+        "16:9"
+      ],
+      "aspect_ratio_recommended": "16:9",
+      "resolution_min": [
+        1280,
+        720
+      ],
+      "resolution_recommended": [
+        1920,
+        1080
+      ],
+      "duration_min_s": 16,
+      "duration_max_s": 30,
+      "max_file_size_mb": 262144,
+      "codecs": [
+        "H.264",
+        "MPEG-2",
+        "MPEG-4"
+      ],
+      "containers": [
+        "MP4",
+        "MPG"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": null,
+      "source_url": "https://support.google.com/google-ads/answer/11462260"
+    },
+    {
+      "platform": "Google",
+      "channel": "YouTube",
+      "placement": "Bumper ads",
+      "aspect_ratios": [
+        "16:9",
+        "9:16",
+        "1:1"
+      ],
+      "aspect_ratio_recommended": "16:9",
+      "resolution_min": [
+        480,
+        480
+      ],
+      "resolution_recommended": [
+        1920,
+        1080
+      ],
+      "duration_min_s": 6,
+      "duration_max_s": 6,
+      "max_file_size_mb": 262144,
+      "codecs": [
+        "H.264",
+        "MPEG-2",
+        "MPEG-4"
+      ],
+      "containers": [
+        "MP4",
+        "MPG"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": null,
+      "source_url": "https://support.google.com/google-ads/answer/6055025"
+    },
+    {
+      "platform": "Google",
+      "channel": "YouTube",
+      "placement": "Shorts ads",
+      "aspect_ratios": [
+        "9:16",
+        "16:9",
+        "1:1"
+      ],
+      "aspect_ratio_recommended": "9:16",
+      "resolution_min": null,
+      "resolution_recommended": [
+        720,
+        1280
+      ],
+      "duration_min_s": 5,
+      "duration_max_s": 180,
+      "max_file_size_mb": 262144,
+      "codecs": null,
+      "containers": [
+        "MP4"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": null,
+      "notes": "solo primeros 60s se reproducen en feed; overlay aparece a los 50s",
+      "source_url": "https://support.google.com/google-ads/answer/16041697"
+    },
+    {
+      "platform": "Google",
+      "channel": "YouTube",
+      "placement": "Video action / Demand Gen",
+      "aspect_ratios": [
+        "1:1",
+        "16:9",
+        "4:5",
+        "9:16"
+      ],
+      "aspect_ratio_recommended": "16:9",
+      "resolution_min": null,
+      "resolution_recommended": [
+        1920,
+        1080
+      ],
+      "duration_min_s": 5,
+      "duration_max_s": null,
+      "max_file_size_mb": 262144,
+      "codecs": null,
+      "containers": [
+        "MPG"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": "puede correr sin sonido, no obligatorio",
+      "notes": "min 10s para elegibilidad in-stream; recomendado >15s",
+      "source_url": "https://support.google.com/google-ads/answer/17141078"
+    },
+    {
+      "platform": "Programmatic",
+      "channel": "DV360/VAST",
+      "placement": "VAST Standard",
+      "aspect_ratios": [
+        "16:9",
+        "21:9",
+        "1:1",
+        "9:16"
+      ],
+      "aspect_ratio_recommended": "16:9",
+      "resolution_min": [
+        640,
+        360
+      ],
+      "resolution_recommended": [
+        1920,
+        1080
+      ],
+      "duration_min_s": 3,
+      "duration_max_s": 60,
+      "max_file_size_mb": 1000,
+      "codecs": [
+        "H.264 High Profile"
+      ],
+      "codecs_optional": [
+        "H.265/HEVC",
+        "VP9",
+        "AV1"
+      ],
+      "containers": [
+        "MP4"
+      ],
+      "frame_rate": [
+        23.976,
+        24,
+        25,
+        29.97,
+        30,
+        50,
+        59.94,
+        60
+      ],
+      "bitrate_kbps": {
+        "360p": [
+          1500,
+          3000
+        ],
+        "480p_540p": [
+          2000,
+          4000
+        ],
+        "720p": [
+          2000,
+          5000
+        ],
+        "1080p": [
+          4000,
+          10000
+        ],
+        "4K": [
+          15000,
+          30000
+        ]
+      },
+      "vast_versions_supported": [
+        "2.0",
+        "3.0",
+        "4.x"
+      ],
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": "AAC-LC (Dolby 5.1 opcional CTV); 128-192kbps estéreo / 256-384kbps surround; 48kHz pref; loudness -24LKFS±2 (US) / -23LUFS±1 (EU); pico <=-6dBTP",
+      "notes": "duraciones comunes: 6s, 15s, 20s, 30s; short-form 3-10s",
+      "source_url": "https://iabtechlab.com/wp-content/uploads/2022/03/Ad-Format-Guidelines_DV-CTV.pdf"
+    },
+    {
+      "platform": "LinkedIn",
+      "channel": "LinkedIn",
+      "placement": "Video Ads (Sponsored Content)",
+      "aspect_ratios": [
+        "4:5",
+        "9:16",
+        "16:9",
+        "1:1"
+      ],
+      "aspect_ratio_recommended": null,
+      "aspect_ratio_tolerance": "±5%",
+      "resolution_min": [
+        360,
+        360
+      ],
+      "resolution_recommended": null,
+      "resolution_max": [
+        1920,
+        1920
+      ],
+      "duration_min_s": 3,
+      "duration_max_s": 1800,
+      "max_file_size_mb": 500,
+      "min_file_size_mb": 0.075,
+      "codecs": null,
+      "containers": [
+        "MP4"
+      ],
+      "frame_rate": 30,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": "AAC o MPEG4, sample rate <64kHz",
+      "source_url": "https://business.linkedin.com/advertise/ads/sponsored-content/video-ads/specs"
+    },
+    {
+      "platform": "LinkedIn",
+      "channel": "LinkedIn",
+      "placement": "Thought Leader Ads (video)",
+      "aspect_ratios": null,
+      "aspect_ratio_recommended": null,
+      "resolution_min": null,
+      "resolution_recommended": null,
+      "duration_min_s": 3,
+      "duration_max_s": 900,
+      "max_file_size_mb": 5000,
+      "codecs": null,
+      "containers": [
+        "MP4"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": null,
+      "notes": "no tiene tabla de specs propia; remite a specs de video nativo/post orgánico",
+      "source_url": "https://business.linkedin.com/advertise/ads/sponsored-content/thought-leader-ads/specs"
+    },
+    {
+      "platform": "Pinterest",
+      "channel": "Pinterest",
+      "placement": "Standard Width Video Ads",
+      "aspect_ratios": [
+        "1:1",
+        "2:3",
+        "4:5",
+        "9:16"
+      ],
+      "aspect_ratio_recommended": null,
+      "aspect_ratio_range": "entre 1:2 y 1.91:1",
+      "resolution_min": null,
+      "resolution_recommended": null,
+      "duration_min_s": 4,
+      "duration_max_s": 900,
+      "max_file_size_mb": 2000,
+      "codecs": [
+        "H.264",
+        "H.265"
+      ],
+      "containers": [
+        "MP4",
+        "MOV",
+        "M4V"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": null,
+      "notes": "recomendado 6-15s; Pinterest no publica resolución/fps/bitrate/captions",
+      "source_url": "https://help.pinterest.com/en/business/article/pinterest-product-specs"
+    },
+    {
+      "platform": "Pinterest",
+      "channel": "Pinterest",
+      "placement": "Max Width Video Ads",
+      "aspect_ratios": null,
+      "aspect_ratio_recommended": null,
+      "aspect_ratio_range": "no excede altura de 1:1, aprox 1:1 a 16:9",
+      "resolution_min": null,
+      "resolution_recommended": null,
+      "duration_min_s": 4,
+      "duration_max_s": 900,
+      "max_file_size_mb": 2000,
+      "codecs": [
+        "H.264",
+        "H.265"
+      ],
+      "containers": [
+        "MP4",
+        "MOV",
+        "M4V"
+      ],
+      "frame_rate": null,
+      "bitrate_kbps": null,
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": null,
+      "notes": "recomendado 6-15s",
+      "source_url": "https://help.pinterest.com/en/business/article/pinterest-product-specs"
+    },
+    {
+      "platform": "CTV",
+      "channel": "IAB",
+      "placement": "Linear ready-to-serve",
+      "aspect_ratios": [
+        "16:9",
+        "4:3",
+        "21:9"
+      ],
+      "aspect_ratio_recommended": "16:9",
+      "resolution_min": [
+        1280,
+        720
+      ],
+      "resolution_recommended": [
+        1920,
+        1080
+      ],
+      "duration_min_s": 3,
+      "duration_max_s": 60,
+      "max_file_size_mb": null,
+      "codecs": [
+        "H.264"
+      ],
+      "containers": [
+        "MP4 (progressive)",
+        "HLS/MPEG-DASH (adaptive)"
+      ],
+      "frame_rate": [
+        23.976,
+        25,
+        29.97
+      ],
+      "bitrate_kbps": [
+        15000,
+        30000
+      ],
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": "AAC-LC/HE-AACv1 128-192kbps; 2.0 estéreo (5.1 opcional); 44.1/48kHz; loudness -24LKFS±2 (US/ATSC) o -23LUFS±1 (EU/EBU); pico <=-6dBTP",
+      "notes": "duraciones estándar 6/15/30s; bumper 3-10s; hasta 60s. No hay plataforma CTV única, este es el común denominador de industria.",
+      "source_url": "https://iabtechlab.com/wp-content/uploads/2022/03/Ad-Format-Guidelines_DV-CTV.pdf"
+    },
+    {
+      "platform": "CTV",
+      "channel": "Amazon",
+      "placement": "Streaming TV video",
+      "aspect_ratios": [
+        "16:9"
+      ],
+      "aspect_ratio_recommended": "16:9",
+      "resolution_min": [
+        1920,
+        1080
+      ],
+      "resolution_recommended": null,
+      "duration_allowed_s": [
+        15,
+        30,
+        45,
+        60
+      ],
+      "duration_allowed_s_3p": [
+        6,
+        10,
+        15,
+        20,
+        30,
+        45,
+        60,
+        75,
+        90
+      ],
+      "max_file_size_mb": 500,
+      "codecs": [
+        "H.264",
+        "MPEG-2",
+        "MPEG-4"
+      ],
+      "containers": [
+        "MP4",
+        "M2T",
+        "TS"
+      ],
+      "frame_rate": [
+        23.976,
+        24,
+        25,
+        29.97
+      ],
+      "bitrate_kbps": {
+        "min": 15000,
+        "min_twitch_fire_3p": 8000,
+        "recommended": 50000
+      },
+      "captions_required": false,
+      "safe_zone_notes": null,
+      "audio": "AAC, mín 192kbps, 44.1/48kHz, mín 2 canales",
+      "notes": "frame rate en modo constante",
+      "source_url": "https://advertising.amazon.com/resources/ad-specs/dsp/video/streaming-tv-prime-video-ads"
+    }
+  ]
+}

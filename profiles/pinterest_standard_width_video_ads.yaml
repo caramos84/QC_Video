@@ -1,0 +1,33 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: pinterest_standard_width_video_ads
+platform: Pinterest
+channel: Pinterest
+placement: Standard Width Video Ads
+technical:
+  aspect_ratios:
+  - '1:1'
+  - '2:3'
+  - '4:5'
+  - '9:16'
+  aspect_ratio_recommended: null
+  aspect_ratio_range: entre 1:2 y 1.91:1
+  resolution_min: null
+  resolution_recommended: null
+  duration_min_s: 4
+  duration_max_s: 900
+  max_file_size_mb: 2000
+  codecs:
+  - H.264
+  - H.265
+  containers:
+  - MP4
+  - MOV
+  - M4V
+  frame_rate: null
+  bitrate_kbps: null
+  captions_required: false
+  safe_zone_notes: null
+  audio: null
+source_url: https://help.pinterest.com/en/business/article/pinterest-product-specs
+notes: recomendado 6-15s; Pinterest no publica resolución/fps/bitrate/captions

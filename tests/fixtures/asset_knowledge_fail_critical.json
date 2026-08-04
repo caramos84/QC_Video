@@ -1,0 +1,42 @@
+{
+  "asset": {
+    "metadata": {
+      "filename": "fixture_fail_critical.mp4",
+      "duration": 15.0,
+      "fps": 30.0,
+      "width": 1920,
+      "height": 1080,
+      "orientation": "horizontal",
+      "audio_present": true
+    },
+    "manifest": {
+      "asset_id": "fixture_fail_critical",
+      "duration": 15.0,
+      "audio_present": true,
+      "frames": [{"time": 0, "file": "frame_0000.jpg"}]
+    }
+  },
+  "visual": {
+    "summary": {
+      "asset_filename": "fixture_fail_critical.mp4",
+      "frames_processed": 3,
+      "frames_with_text": 2,
+      "frames_without_text": 1,
+      "total_words": 15,
+      "avg_words": 5.0,
+      "max_words_in_frame": 10
+    },
+    "frames": []
+  },
+  "audio": {
+    "summary": {
+      "language": "es",
+      "duration": 15.0,
+      "audio_present": true,
+      "speech_detected": true,
+      "word_count": 20,
+      "segments": 2
+    },
+    "transcript": {"text": "Texto de ejemplo para el fixture.", "segments": [], "language": "es"}
+  }
+}

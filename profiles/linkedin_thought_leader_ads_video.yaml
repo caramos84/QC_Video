@@ -1,0 +1,24 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: linkedin_thought_leader_ads_video
+platform: LinkedIn
+channel: LinkedIn
+placement: Thought Leader Ads (video)
+technical:
+  aspect_ratios: null
+  aspect_ratio_recommended: null
+  resolution_min: null
+  resolution_recommended: null
+  duration_min_s: 3
+  duration_max_s: 900
+  max_file_size_mb: 5000
+  codecs: null
+  containers:
+  - MP4
+  frame_rate: null
+  bitrate_kbps: null
+  captions_required: false
+  safe_zone_notes: null
+  audio: null
+source_url: https://business.linkedin.com/advertise/ads/sponsored-content/thought-leader-ads/specs
+notes: no tiene tabla de specs propia; remite a specs de video nativo/post orgánico

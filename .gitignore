@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+report.xml
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# QC engine generated artifacts
+outputs/*
+!outputs/.gitkeep
+
+# Local Claude Code project state
+.claude/

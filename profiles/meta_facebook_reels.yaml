@@ -1,0 +1,29 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: meta_facebook_reels
+platform: Meta
+channel: Facebook
+placement: Reels
+technical:
+  aspect_ratios:
+  - '9:16'
+  aspect_ratio_recommended: '9:16'
+  resolution_min: null
+  resolution_recommended:
+  - 1440
+  - 2560
+  duration_min_s: null
+  duration_max_s: null
+  max_file_size_mb: 4000
+  codecs:
+  - H.264
+  containers:
+  - MP4
+  - MOV
+  - GIF
+  frame_rate: null
+  bitrate_kbps: null
+  captions_required: false
+  safe_zone_notes: ~14% top, 35% bottom, 6% cada lado
+  audio: AAC estéreo >=128kbps, muy recomendado
+source_url: https://www.facebook.com/business/ads-guide/update/video/facebook-facebook-reels

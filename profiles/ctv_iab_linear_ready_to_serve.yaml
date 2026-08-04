@@ -1,0 +1,40 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: ctv_iab_linear_ready_to_serve
+platform: CTV
+channel: IAB
+placement: Linear ready-to-serve
+technical:
+  aspect_ratios:
+  - '16:9'
+  - '4:3'
+  - '21:9'
+  aspect_ratio_recommended: '16:9'
+  resolution_min:
+  - 1280
+  - 720
+  resolution_recommended:
+  - 1920
+  - 1080
+  duration_min_s: 3
+  duration_max_s: 60
+  max_file_size_mb: null
+  codecs:
+  - H.264
+  containers:
+  - MP4 (progressive)
+  - HLS/MPEG-DASH (adaptive)
+  frame_rate:
+  - 23.976
+  - 25
+  - 29.97
+  bitrate_kbps:
+  - 15000
+  - 30000
+  captions_required: false
+  safe_zone_notes: null
+  audio: AAC-LC/HE-AACv1 128-192kbps; 2.0 estéreo (5.1 opcional); 44.1/48kHz; loudness -24LKFS±2 (US/ATSC)
+    o -23LUFS±1 (EU/EBU); pico <=-6dBTP
+source_url: https://iabtechlab.com/wp-content/uploads/2022/03/Ad-Format-Guidelines_DV-CTV.pdf
+notes: duraciones estándar 6/15/30s; bumper 3-10s; hasta 60s. No hay plataforma CTV única, este es el
+  común denominador de industria.

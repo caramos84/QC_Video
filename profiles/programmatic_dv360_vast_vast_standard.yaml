@@ -1,0 +1,65 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: programmatic_dv360_vast_vast_standard
+platform: Programmatic
+channel: DV360/VAST
+placement: VAST Standard
+technical:
+  aspect_ratios:
+  - '16:9'
+  - '21:9'
+  - '1:1'
+  - '9:16'
+  aspect_ratio_recommended: '16:9'
+  resolution_min:
+  - 640
+  - 360
+  resolution_recommended:
+  - 1920
+  - 1080
+  duration_min_s: 3
+  duration_max_s: 60
+  max_file_size_mb: 1000
+  codecs:
+  - H.264 High Profile
+  codecs_optional:
+  - H.265/HEVC
+  - VP9
+  - AV1
+  containers:
+  - MP4
+  frame_rate:
+  - 23.976
+  - 24
+  - 25
+  - 29.97
+  - 30
+  - 50
+  - 59.94
+  - 60
+  bitrate_kbps:
+    360p:
+    - 1500
+    - 3000
+    480p_540p:
+    - 2000
+    - 4000
+    720p:
+    - 2000
+    - 5000
+    1080p:
+    - 4000
+    - 10000
+    4K:
+    - 15000
+    - 30000
+  vast_versions_supported:
+  - '2.0'
+  - '3.0'
+  - 4.x
+  captions_required: false
+  safe_zone_notes: null
+  audio: AAC-LC (Dolby 5.1 opcional CTV); 128-192kbps estéreo / 256-384kbps surround; 48kHz pref; loudness
+    -24LKFS±2 (US) / -23LUFS±1 (EU); pico <=-6dBTP
+source_url: https://iabtechlab.com/wp-content/uploads/2022/03/Ad-Format-Guidelines_DV-CTV.pdf
+notes: 'duraciones comunes: 6s, 15s, 20s, 30s; short-form 3-10s'

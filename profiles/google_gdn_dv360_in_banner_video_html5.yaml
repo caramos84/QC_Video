@@ -1,0 +1,27 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: google_gdn_dv360_in_banner_video_html5
+platform: Google
+channel: GDN/DV360
+placement: In-banner video (HTML5)
+technical:
+  aspect_ratios:
+  - '4:3'
+  aspect_ratio_recommended: '4:3'
+  resolution_min: null
+  resolution_recommended:
+  - 4096
+  - 4096
+  duration_min_s: null
+  duration_max_s: 240
+  max_file_size_mb: 2.2
+  codecs: null
+  containers: null
+  frame_rate: 14
+  frame_rate_recommended: 30
+  bitrate_kbps: null
+  captions_required: false
+  safe_zone_notes: null
+  audio: volumen codificado <= -12dB
+source_url: https://support.google.com/displayvideo/answer/6006843
+notes: animación de apertura <=30s; carga inicial <=40KB

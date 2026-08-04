@@ -1,0 +1,116 @@
+# Pipeline de Harness CI para el Motor de QC (rules/).
+#
+# Usa Harness Cloud como build infra (confirmado con el usuario, sin delegate
+# propio) -- ver plataforma "platform" + runtime "Cloud" más abajo.
+#
+# Los valores <+input> y los *_PLACEHOLDER deben completarse durante el setup
+# manual de cuenta en Harness (org/project/connector) -- ver el checklist en
+# el plan de implementación. No se pueden provisionar desde este repo solo.
+pipeline:
+  name: QC-Video-CI
+  identifier: QC_Video_CI
+  projectIdentifier: <+input>
+  orgIdentifier: <+input>
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: QC_VIDEO_GITHUB_CONNECTOR_PLACEHOLDER
+        repoName: caramos84/QC_Video
+        build: <+input>
+  stages:
+    - stage:
+        name: QC Engine CI
+        identifier: qc_engine_ci
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Install dependencies
+                  identifier: install_dependencies
+                  spec:
+                    shell: Sh
+                    image: python:3.11-slim
+                    command: |
+                      pip install -e ".[dev]"
+
+              - step:
+                  type: Run
+                  name: Lint
+                  identifier: lint
+                  spec:
+                    shell: Sh
+                    image: python:3.11-slim
+                    command: |
+                      ruff check rules/ tests/
+
+              - step:
+                  type: Run
+                  name: Schema validation
+                  identifier: schema_validation
+                  spec:
+                    shell: Sh
+                    image: python:3.11-slim
+                    command: |
+                      python3 - <<'PY'
+                      import json, sys
+                      from pathlib import Path
+                      import yaml, jsonschema
+
+                      profile_schema = json.load(open("rules/schema/profile.schema.json"))
+                      brief_schema = json.load(open("rules/schema/brief.schema.json"))
+
+                      errors = []
+                      for p in sorted(Path("profiles").glob("*.yaml")):
+                          try:
+                              jsonschema.validate(yaml.safe_load(p.read_text()), profile_schema)
+                          except jsonschema.ValidationError as e:
+                              errors.append(f"{p}: {e.message}")
+                      for b in sorted(Path("samples/briefs").glob("*.yaml")):
+                          try:
+                              jsonschema.validate(yaml.safe_load(b.read_text()), brief_schema)
+                          except jsonschema.ValidationError as e:
+                              errors.append(f"{b}: {e.message}")
+
+                      if errors:
+                          print("\n".join(errors))
+                          sys.exit(1)
+                      print("Todos los profiles y briefs son válidos.")
+                      PY
+
+              - step:
+                  type: Run
+                  name: Unit tests
+                  identifier: unit_tests
+                  spec:
+                    shell: Sh
+                    image: python:3.11-slim
+                    command: |
+                      pytest tests/ --junitxml=report.xml --cov=rules --cov-report=xml
+                  reports:
+                    type: JUnit
+                    spec:
+                      paths:
+                        - report.xml
+
+              - step:
+                  type: Run
+                  name: Profile-matrix sync check
+                  identifier: profile_matrix_sync_check
+                  spec:
+                    shell: Sh
+                    image: python:3.11-slim
+                    command: |
+                      python -m rules.tools.build_profiles_from_matriz --check
+  # Trigger de PR hacia main -- requiere que el conector Git y el
+  # webhook/GitHub App ya estén configurados del lado de la cuenta Harness
+  # (ver checklist de setup manual del plan). No se activa solo con este YAML.
