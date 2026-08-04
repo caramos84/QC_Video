@@ -1,0 +1,34 @@
+# Configuración de scoring y veredicto del Motor de QC.
+# Pesos y umbrales son de negocio, no deben quedar hardcodeados en engine.py/scoring.py.
+schema_version: 1
+
+score_start: 100
+score_floor: 0
+
+severities:
+  # 'critico' no resta puntos: fuerza FAIL directo, independiente del score.
+  critico:
+    deduction: 0
+    forces_fail: true
+  error_de_marca:
+    deduction: 20
+    forces_fail: false
+  error_tecnico:
+    deduction: 15
+    forces_fail: false
+  warning:
+    deduction: 5
+    forces_fail: false
+
+# Cobertura = reglas_evaluadas / reglas_aplicables (excluye NOT_EVALUATED del numerador).
+# Decisión confirmada con el usuario: un score alto con cobertura baja NO puede
+# salir PASS -- se limita a REVIEW para no dar falsa confianza mientras faltan
+# las capas de CV/audio-calidad/semántica.
+coverage:
+  pass_min_coverage_pct: 80
+
+thresholds:
+  pass_min_score: 90
+  review_min_score: 70
+  # score < review_min_score, o cualquier finding 'critico', o
+  # (score >= pass_min_score pero coverage < pass_min_coverage_pct) -> ver engine.py/scoring.py

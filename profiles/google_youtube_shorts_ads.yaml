@@ -1,0 +1,29 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: google_youtube_shorts_ads
+platform: Google
+channel: YouTube
+placement: Shorts ads
+technical:
+  aspect_ratios:
+  - '9:16'
+  - '16:9'
+  - '1:1'
+  aspect_ratio_recommended: '9:16'
+  resolution_min: null
+  resolution_recommended:
+  - 720
+  - 1280
+  duration_min_s: 5
+  duration_max_s: 180
+  max_file_size_mb: 262144
+  codecs: null
+  containers:
+  - MP4
+  frame_rate: null
+  bitrate_kbps: null
+  captions_required: false
+  safe_zone_notes: null
+  audio: null
+source_url: https://support.google.com/google-ads/answer/16041697
+notes: solo primeros 60s se reproducen en feed; overlay aparece a los 50s

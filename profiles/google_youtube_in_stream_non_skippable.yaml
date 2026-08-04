@@ -1,0 +1,36 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: google_youtube_in_stream_non_skippable
+platform: Google
+channel: YouTube
+placement: In-stream non-skippable
+technical:
+  aspect_ratios:
+  - '16:9'
+  - '4:3'
+  - '9:16'
+  - '2:3'
+  - '1:1'
+  aspect_ratio_recommended: '16:9'
+  resolution_min:
+  - 720
+  - 480
+  resolution_recommended:
+  - 1920
+  - 1080
+  duration_min_s: 7
+  duration_max_s: 15
+  max_file_size_mb: 262144
+  codecs:
+  - H.264
+  - MPEG-2
+  - MPEG-4
+  containers:
+  - MP4
+  - MPG
+  frame_rate: null
+  bitrate_kbps: null
+  captions_required: false
+  safe_zone_notes: null
+  audio: null
+source_url: https://support.google.com/google-ads/answer/11462260

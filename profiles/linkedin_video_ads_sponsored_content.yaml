@@ -1,0 +1,34 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: linkedin_video_ads_sponsored_content
+platform: LinkedIn
+channel: LinkedIn
+placement: Video Ads (Sponsored Content)
+technical:
+  aspect_ratios:
+  - '4:5'
+  - '9:16'
+  - '16:9'
+  - '1:1'
+  aspect_ratio_recommended: null
+  aspect_ratio_tolerance: ±5%
+  resolution_min:
+  - 360
+  - 360
+  resolution_recommended: null
+  resolution_max:
+  - 1920
+  - 1920
+  duration_min_s: 3
+  duration_max_s: 1800
+  max_file_size_mb: 500
+  min_file_size_mb: 0.075
+  codecs: null
+  containers:
+  - MP4
+  frame_rate: 30
+  bitrate_kbps: null
+  captions_required: false
+  safe_zone_notes: null
+  audio: AAC o MPEG4, sample rate <64kHz
+source_url: https://business.linkedin.com/advertise/ads/sponsored-content/video-ads/specs

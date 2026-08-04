@@ -1,0 +1,26 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: google_gdn_responsive_display_video_via_youtube_link
+platform: Google
+channel: GDN
+placement: Responsive Display (video via YouTube link)
+technical:
+  aspect_ratios:
+  - '16:9'
+  - '1:1'
+  - '2:3'
+  aspect_ratio_recommended: '16:9'
+  resolution_min: null
+  resolution_recommended: null
+  duration_min_s: null
+  duration_max_s: null
+  max_file_size_mb: null
+  codecs: null
+  containers: null
+  frame_rate: null
+  bitrate_kbps: null
+  captions_required: false
+  safe_zone_notes: null
+  audio: null
+source_url: https://support.google.com/google-ads/answer/17090561
+notes: no se sube archivo directo, hereda specs de YouTube via link; duración libre, recomendado 30s

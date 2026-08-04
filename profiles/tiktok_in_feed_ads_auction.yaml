@@ -1,0 +1,32 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: tiktok_in_feed_ads_auction
+platform: TikTok
+channel: TikTok
+placement: In-Feed Ads (Auction)
+technical:
+  aspect_ratios:
+  - '9:16'
+  - '16:9'
+  - '1:1'
+  aspect_ratio_recommended: '9:16'
+  resolution_min:
+  - 540
+  - 960
+  resolution_recommended: null
+  duration_min_s: null
+  duration_max_s: 600
+  max_file_size_mb: 500
+  codecs: null
+  containers:
+  - MP4
+  - MOV
+  - MPEG
+  - 3GP
+  - AVI
+  frame_rate: null
+  bitrate_kbps: 516
+  captions_required: false
+  safe_zone_notes: zonas seguras descargables, no cuantificadas en px por la fuente
+  audio: obligatorio (todo creativo debe tener sonido)
+source_url: https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads

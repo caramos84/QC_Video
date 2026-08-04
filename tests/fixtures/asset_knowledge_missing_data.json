@@ -1,0 +1,21 @@
+{
+  "asset": {
+    "metadata": {
+      "filename": "fixture_missing_data.mp4",
+      "duration": 15.0,
+      "fps": 30.0,
+      "width": 1080,
+      "height": 1920,
+      "orientation": "vertical",
+      "audio_present": false
+    },
+    "manifest": {
+      "asset_id": "fixture_missing_data",
+      "duration": 15.0,
+      "audio_present": false,
+      "frames": []
+    }
+  },
+  "visual": null,
+  "audio": null
+}

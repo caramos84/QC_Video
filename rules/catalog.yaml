@@ -1,0 +1,249 @@
+# Catálogo de reglas del Motor de QC.
+#
+# Cada regla declara:
+# - layer: tecnica | visual | sonora | semantica  (las 4 capas del board de Miro)
+# - default_severity: critico | error_de_marca | error_tecnico | warning
+#   (override-able por campaña en samples/briefs/*.yaml -> severity_overrides)
+# - implementable: si hay una función real en rules/checks.py (true) o es un
+#   stub NOT_EVALUATED (false) porque el dato de origen todavía no existe en
+#   el pipeline (sin CV, sin análisis de calidad de audio, sin capa semántica).
+# - requires_fields: paths (dot notation) dentro de asset_knowledge.json que
+#   deben existir y no ser null para poder evaluar la regla.
+# - requires_profile_fields: paths dentro del profile (profiles/*.yaml) que
+#   deben existir y no ser null (muchos campos de la matriz de medios son
+#   legítimamente null cuando la plataforma no publica ese límite).
+# - check_fn: nombre de la función registrada en rules/checks.py (solo si
+#   implementable: true).
+# - not_evaluated_reason: motivo por defecto cuando implementable: false.
+
+schema_version: 1
+
+rules:
+  # ---- Capa técnica ----
+  - rule_id: TECH_ASPECT_RATIO
+    layer: tecnica
+    default_severity: critico
+    implementable: true
+    description: "El aspect ratio del asset coincide con los soportados por el placement."
+    requires_fields: ["asset.metadata.width", "asset.metadata.height"]
+    requires_profile_fields: ["technical.aspect_ratios"]
+    check_fn: check_aspect_ratio
+
+  - rule_id: TECH_RESOLUTION_MIN
+    layer: tecnica
+    default_severity: error_tecnico
+    implementable: true
+    description: "La resolución del asset cumple la resolución mínima del placement."
+    requires_fields: ["asset.metadata.width", "asset.metadata.height"]
+    requires_profile_fields: ["technical.resolution_min"]
+    check_fn: check_resolution_min
+
+  - rule_id: TECH_DURATION_MIN
+    layer: tecnica
+    default_severity: error_tecnico
+    implementable: true
+    description: "La duración del asset no es menor al mínimo del placement."
+    requires_fields: ["asset.metadata.duration"]
+    requires_profile_fields: ["technical.duration_min_s"]
+    check_fn: check_duration_min
+
+  - rule_id: TECH_DURATION_MAX
+    layer: tecnica
+    default_severity: error_tecnico
+    implementable: true
+    description: "La duración del asset no excede el máximo del placement."
+    requires_fields: ["asset.metadata.duration"]
+    requires_profile_fields: ["technical.duration_max_s"]
+    check_fn: check_duration_max
+
+  - rule_id: TECH_ORIENTATION
+    layer: tecnica
+    default_severity: warning
+    implementable: true
+    description: "La orientación reportada (vertical/horizontal) es consistente con width/height."
+    requires_fields: ["asset.metadata.orientation", "asset.metadata.width", "asset.metadata.height"]
+    requires_profile_fields: []
+    check_fn: check_orientation
+
+  - rule_id: TECH_FILE_SIZE
+    layer: tecnica
+    default_severity: error_tecnico
+    implementable: false
+    description: "El peso del archivo no excede el máximo del placement."
+    requires_fields: ["asset.metadata.file_size_bytes"]
+    requires_profile_fields: ["technical.max_file_size_mb"]
+    not_evaluated_reason: "missing_field:asset.metadata.file_size_bytes (Notebook 01 no lo captura todavía)"
+
+  - rule_id: TECH_CODEC
+    layer: tecnica
+    default_severity: error_tecnico
+    implementable: false
+    description: "El códec de video está entre los soportados por el placement."
+    requires_fields: ["asset.metadata.codec"]
+    requires_profile_fields: ["technical.codecs"]
+    not_evaluated_reason: "missing_field:asset.metadata.codec (Notebook 01 no lo captura todavía)"
+
+  # ---- Capa visual ----
+  - rule_id: VISUAL_TEXT_PRESENCE
+    layer: visual
+    default_severity: warning
+    implementable: true
+    description: "Al menos un frame tiene texto detectado por OCR."
+    requires_fields: ["visual.summary.frames_with_text", "visual.summary.frames_processed"]
+    requires_profile_fields: []
+    check_fn: check_text_presence
+
+  - rule_id: VISUAL_TEXT_DENSITY
+    layer: visual
+    default_severity: warning
+    implementable: true
+    description: "Proxy de legibilidad: palabras máximas detectadas en un solo frame no es excesiva. NO es un análisis real de legibilidad/composición, solo un conteo de palabras OCR."
+    requires_fields: ["visual.summary.max_words_in_frame"]
+    requires_profile_fields: []
+    check_fn: check_text_density
+
+  - rule_id: VISUAL_LOGO_PRESENCE
+    layer: visual
+    default_severity: error_de_marca
+    implementable: false
+    description: "El logo de marca aparece en el video."
+    requires_fields: ["visual.logo_detection"]
+    requires_profile_fields: []
+    not_evaluated_reason: "no_cv_pipeline (Notebook 02 solo hace OCR de texto, no detección de logo)"
+
+  - rule_id: VISUAL_LOGO_SAFE_ZONE
+    layer: visual
+    default_severity: error_de_marca
+    implementable: false
+    description: "El logo permanece dentro de la zona segura del placement."
+    requires_fields: ["visual.logo_detection"]
+    requires_profile_fields: ["technical.safe_zone_notes"]
+    not_evaluated_reason: "no_cv_pipeline"
+
+  - rule_id: VISUAL_CTA_DETECTION
+    layer: visual
+    default_severity: warning
+    implementable: false
+    description: "El CTA requerido por el brief aparece visualmente en el video."
+    requires_fields: ["visual.cta_detection"]
+    requires_profile_fields: []
+    not_evaluated_reason: "no_cv_pipeline (OCR de texto no es lo mismo que detección de CTA)"
+
+  - rule_id: VISUAL_PRODUCT_DETECTION
+    layer: visual
+    default_severity: warning
+    implementable: false
+    description: "El producto anunciado es visualmente identificable."
+    requires_fields: ["visual.product_detection"]
+    requires_profile_fields: []
+    not_evaluated_reason: "no_cv_pipeline"
+
+  - rule_id: VISUAL_DOMINANT_COLOR
+    layer: visual
+    default_severity: warning
+    implementable: false
+    description: "Los colores predominantes son consistentes con la paleta de marca del brief."
+    requires_fields: ["visual.color_analysis"]
+    requires_profile_fields: []
+    not_evaluated_reason: "no_cv_pipeline"
+
+  - rule_id: VISUAL_COMPOSITION
+    layer: visual
+    default_severity: warning
+    implementable: false
+    description: "Composición y legibilidad general del frame (más allá de densidad de palabras)."
+    requires_fields: ["visual.composition_analysis"]
+    requires_profile_fields: []
+    not_evaluated_reason: "no_cv_pipeline"
+
+  # ---- Capa sonora ----
+  - rule_id: SONORA_AUDIO_PRESENT
+    layer: sonora
+    default_severity: error_tecnico
+    implementable: true
+    description: "El asset tiene pista de audio, cuando el placement lo requiere."
+    requires_fields: ["asset.metadata.audio_present"]
+    requires_profile_fields: []
+    check_fn: check_audio_present
+
+  - rule_id: SONORA_SPEECH_DETECTED
+    layer: sonora
+    default_severity: warning
+    implementable: true
+    description: "Se detectó voz/habla en la pista de audio."
+    requires_fields: ["audio.summary.speech_detected"]
+    requires_profile_fields: []
+    check_fn: check_speech_detected
+
+  - rule_id: SONORA_LANGUAGE
+    layer: sonora
+    default_severity: warning
+    implementable: true
+    description: "El idioma detectado coincide con el idioma esperado del brief (si el brief lo especifica)."
+    requires_fields: ["audio.summary.language"]
+    requires_profile_fields: []
+    check_fn: check_language
+
+  - rule_id: SONORA_NARRATION_PRESENT
+    layer: sonora
+    default_severity: warning
+    implementable: true
+    description: "Proxy: hay palabras transcritas (word_count > 0). NO reemplaza detección real de silencios/volumen."
+    requires_fields: ["audio.summary.word_count"]
+    requires_profile_fields: []
+    check_fn: check_narration_present
+
+  - rule_id: SONORA_SILENCE_DETECTION
+    layer: sonora
+    default_severity: error_tecnico
+    implementable: false
+    description: "No hay silencios prolongados no intencionales en el audio."
+    requires_fields: ["audio.silence_analysis"]
+    requires_profile_fields: []
+    not_evaluated_reason: "no_audio_quality_pipeline (Notebook 03 solo transcribe, no analiza silencios)"
+
+  - rule_id: SONORA_VOLUME_LOUDNESS
+    layer: sonora
+    default_severity: error_tecnico
+    implementable: false
+    description: "El nivel de loudness del audio está dentro de rango aceptable."
+    requires_fields: ["audio.loudness_analysis"]
+    requires_profile_fields: ["technical.audio"]
+    not_evaluated_reason: "no_audio_quality_pipeline"
+
+  - rule_id: SONORA_MUSIC_VS_VOICE
+    layer: sonora
+    default_severity: warning
+    implementable: false
+    description: "Balance entre música y voz es adecuado."
+    requires_fields: ["audio.music_voice_analysis"]
+    requires_profile_fields: []
+    not_evaluated_reason: "no_audio_quality_pipeline"
+
+  # ---- Capa semántica ----
+  - rule_id: SEMANTICA_MESSAGE_COMPLIANCE
+    layer: semantica
+    default_severity: error_de_marca
+    implementable: false
+    description: "El mensaje comunicado (texto OCR + transcript) cumple los lineamientos del brief."
+    requires_fields: ["semantic.message_compliance"]
+    requires_profile_fields: []
+    not_evaluated_reason: "no_semantic_pipeline (requiere LLM comparando OCR+transcript contra el brief)"
+
+  - rule_id: SEMANTICA_BRAND_POSITIONING
+    layer: semantica
+    default_severity: error_de_marca
+    implementable: false
+    description: "El posicionamiento de marca comunicado es consistente con el brief."
+    requires_fields: ["semantic.brand_positioning"]
+    requires_profile_fields: []
+    not_evaluated_reason: "no_semantic_pipeline"
+
+  - rule_id: SEMANTICA_GUIDELINE_COMPLIANCE
+    layer: semantica
+    default_severity: error_de_marca
+    implementable: false
+    description: "Cumplimiento general de lineamientos de marca/legales del brief."
+    requires_fields: ["semantic.guideline_compliance"]
+    requires_profile_fields: []
+    not_evaluated_reason: "no_semantic_pipeline"

@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://qc-video/schema/brief.schema.json",
+  "title": "QC Video campaign brief",
+  "description": "Per-campaign business/brand rules that combine with a channel profile at evaluation time. Severity of some catalog rules (e.g. CTA_PRESENCE) can be escalated per the brief, per the Miro board rule: 'CTA no aparece -> warning/error segun brief'.",
+  "type": "object",
+  "required": ["schema_version", "brief_id"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "brief_id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+    "campaign_name": { "type": "string" },
+    "cta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "required": { "type": "boolean" },
+        "accepted_texts": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "legal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "disclaimer_required": { "type": "boolean" },
+        "disclaimer_text_contains": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "brand": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "required_logo_present": { "type": "boolean" },
+        "brand_colors_hex": { "type": "array", "items": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" } },
+        "logo_safe_zone_required": { "type": "boolean" }
+      }
+    },
+    "expected_language": { "type": ["string", "null"] },
+    "severity_overrides": {
+      "type": "object",
+      "description": "Maps a rule_id from rules/catalog.yaml to a severity that overrides the catalog default for this campaign.",
+      "additionalProperties": {
+        "type": "string",
+        "enum": ["critico", "error_de_marca", "error_tecnico", "warning"]
+      }
+    },
+    "notes": { "type": ["string", "null"] }
+  }
+}

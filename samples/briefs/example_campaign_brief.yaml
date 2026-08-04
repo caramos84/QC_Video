@@ -1,0 +1,30 @@
+schema_version: 1
+brief_id: campaign_oferta_escolar_2026
+campaign_name: "Oferta Escolar 2026"
+
+cta:
+  required: true
+  accepted_texts:
+    - "Compra ahora"
+    - "Conoce más"
+
+legal:
+  disclaimer_required: true
+  disclaimer_text_contains:
+    - "Aplican términos y condiciones"
+
+brand:
+  required_logo_present: true
+  brand_colors_hex:
+    - "#E2001A"
+  logo_safe_zone_required: true
+
+expected_language: es
+
+# El catálogo (rules/catalog.yaml) trae CTA_PRESENCE... en realidad el rule_id
+# real es VISUAL_CTA_DETECTION con default_severity 'warning'. Este brief lo
+# escala a 'error_de_marca' porque para esta campaña el CTA es obligatorio.
+severity_overrides:
+  VISUAL_CTA_DETECTION: error_de_marca
+
+notes: "Brief de ejemplo usado en tests y como fixture de demo del motor de reglas."

@@ -1,0 +1,20 @@
+schema_version: 1
+profile_id: test_profile
+platform: TestPlatform
+channel: Test
+placement: "Test Placement"
+technical:
+  aspect_ratios: ["9:16"]
+  resolution_min: [500, 500]
+  resolution_recommended: [1080, 1920]
+  duration_min_s: 3
+  duration_max_s: 60
+  max_file_size_mb: 100
+  codecs: ["H.264"]
+  containers: ["MP4"]
+  frame_rate: null
+  bitrate_kbps: null
+  captions_required: false
+  safe_zone_notes: null
+  audio: "recomendado"
+source_url: "https://example.com/test-profile"

@@ -1,0 +1,10 @@
+schema_version: 1
+brief_id: test_brief
+campaign_name: "Test Campaign"
+cta:
+  required: true
+  accepted_texts: ["Compra ahora"]
+expected_language: es
+severity_overrides:
+  VISUAL_CTA_DETECTION: error_de_marca
+notes: "Fixture de brief usado por tests/."

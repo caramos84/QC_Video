@@ -1,0 +1,52 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: ctv_amazon_streaming_tv_video
+platform: CTV
+channel: Amazon
+placement: Streaming TV video
+technical:
+  aspect_ratios:
+  - '16:9'
+  aspect_ratio_recommended: '16:9'
+  resolution_min:
+  - 1920
+  - 1080
+  resolution_recommended: null
+  duration_allowed_s:
+  - 15
+  - 30
+  - 45
+  - 60
+  duration_allowed_s_3p:
+  - 6
+  - 10
+  - 15
+  - 20
+  - 30
+  - 45
+  - 60
+  - 75
+  - 90
+  max_file_size_mb: 500
+  codecs:
+  - H.264
+  - MPEG-2
+  - MPEG-4
+  containers:
+  - MP4
+  - M2T
+  - TS
+  frame_rate:
+  - 23.976
+  - 24
+  - 25
+  - 29.97
+  bitrate_kbps:
+    min: 15000
+    min_twitch_fire_3p: 8000
+    recommended: 50000
+  captions_required: false
+  safe_zone_notes: null
+  audio: AAC, mín 192kbps, 44.1/48kHz, mín 2 canales
+source_url: https://advertising.amazon.com/resources/ad-specs/dsp/video/streaming-tv-prime-video-ads
+notes: frame rate en modo constante

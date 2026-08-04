@@ -1,0 +1,32 @@
+# AUTOGENERADO por rules/tools/build_profiles_from_matriz.py desde context/matriz_medios.json - NO editar a mano.
+schema_version: 1
+profile_id: google_youtube_non_skippable_30s_ctv
+platform: Google
+channel: YouTube
+placement: Non-skippable 30s (CTV)
+technical:
+  aspect_ratios:
+  - '16:9'
+  aspect_ratio_recommended: '16:9'
+  resolution_min:
+  - 1280
+  - 720
+  resolution_recommended:
+  - 1920
+  - 1080
+  duration_min_s: 16
+  duration_max_s: 30
+  max_file_size_mb: 262144
+  codecs:
+  - H.264
+  - MPEG-2
+  - MPEG-4
+  containers:
+  - MP4
+  - MPG
+  frame_rate: null
+  bitrate_kbps: null
+  captions_required: false
+  safe_zone_notes: null
+  audio: null
+source_url: https://support.google.com/google-ads/answer/11462260
