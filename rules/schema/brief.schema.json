@@ -32,7 +32,8 @@
       "properties": {
         "required_logo_present": { "type": "boolean" },
         "brand_colors_hex": { "type": "array", "items": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" } },
-        "logo_safe_zone_required": { "type": "boolean" }
+        "logo_safe_zone_required": { "type": "boolean" },
+        "logo_reference_image": { "type": "string" }
       }
     },
     "expected_language": { "type": ["string", "null"] },

@@ -59,6 +59,7 @@ technical:
   - 4.x
   captions_required: false
   safe_zone_notes: null
+  safe_zone_margins_pct: null
   audio: AAC-LC (Dolby 5.1 opcional CTV); 128-192kbps estéreo / 256-384kbps surround; 48kHz pref; loudness
     -24LKFS±2 (US) / -23LUFS±1 (EU); pico <=-6dBTP
 source_url: https://iabtechlab.com/wp-content/uploads/2022/03/Ad-Format-Guidelines_DV-CTV.pdf

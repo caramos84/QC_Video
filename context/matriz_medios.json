@@ -43,7 +43,8 @@
       "captions_required": false,
       "safe_zone_notes": null,
       "audio": "AAC estéreo >=128kbps, opcional",
-      "source_url": "https://www.facebook.com/business/ads-guide/update/video"
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "Meta",
@@ -77,7 +78,8 @@
       "captions_required": false,
       "safe_zone_notes": null,
       "audio": "opcional",
-      "source_url": "https://www.facebook.com/business/ads-guide/update/video/instagram-feed"
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video/instagram-feed",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "Meta",
@@ -111,7 +113,13 @@
       "captions_required": false,
       "safe_zone_notes": "~14% margen superior, ~20% margen inferior",
       "audio": "AAC estéreo >=128kbps",
-      "source_url": "https://www.facebook.com/business/ads-guide/update/video/facebook-story"
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video/facebook-story",
+      "safe_zone_margins_pct": {
+        "top": 14,
+        "bottom": 20,
+        "left": null,
+        "right": null
+      }
     },
     {
       "platform": "Meta",
@@ -145,7 +153,13 @@
       "captions_required": false,
       "safe_zone_notes": "~14% top, 35% bottom, 6% cada lado",
       "audio": "AAC estéreo >=128kbps",
-      "source_url": "https://www.facebook.com/business/ads-guide/update/video/instagram-story"
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video/instagram-story",
+      "safe_zone_margins_pct": {
+        "top": 14,
+        "bottom": 35,
+        "left": 6,
+        "right": 6
+      }
     },
     {
       "platform": "Meta",
@@ -176,7 +190,13 @@
       "captions_required": false,
       "safe_zone_notes": "~14% top, 35% bottom, 6% cada lado",
       "audio": "AAC estéreo >=128kbps, muy recomendado",
-      "source_url": "https://www.facebook.com/business/ads-guide/update/video/facebook-facebook-reels"
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video/facebook-facebook-reels",
+      "safe_zone_margins_pct": {
+        "top": 14,
+        "bottom": 35,
+        "left": 6,
+        "right": 6
+      }
     },
     {
       "platform": "Meta",
@@ -209,7 +229,13 @@
       "captions_required": false,
       "safe_zone_notes": "~14% top, 35% bottom, 6% cada lado; mín ancho 500px si dura >=30s",
       "audio": "AAC estéreo >=128kbps, muy recomendado",
-      "source_url": "https://www.facebook.com/business/ads-guide/update/video/instagram-reels"
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video/instagram-reels",
+      "safe_zone_margins_pct": {
+        "top": 14,
+        "bottom": 35,
+        "left": 6,
+        "right": 6
+      }
     },
     {
       "platform": "Meta",
@@ -242,7 +268,8 @@
       "safe_zone_notes": null,
       "audio": "AAC estéreo >128kbps",
       "notes": "Desktop 5-15s; mobile 5s-10min",
-      "source_url": "https://www.facebook.com/business/ads-guide/update/video/facebook-instream-video"
+      "source_url": "https://www.facebook.com/business/ads-guide/update/video/facebook-instream-video",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "TikTok",
@@ -275,7 +302,8 @@
       "captions_required": false,
       "safe_zone_notes": "zonas seguras descargables, no cuantificadas en px por la fuente",
       "audio": "obligatorio (todo creativo debe tener sonido)",
-      "source_url": "https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads"
+      "source_url": "https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "TikTok",
@@ -308,7 +336,8 @@
       "captions_required": false,
       "safe_zone_notes": "zonas seguras descargables, no cuantificadas en px por la fuente",
       "audio": "obligatorio",
-      "source_url": "https://ads.tiktok.com/help/article/tiktok-reservation-in-feed-ads-reach-frequency"
+      "source_url": "https://ads.tiktok.com/help/article/tiktok-reservation-in-feed-ads-reach-frequency",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "TikTok",
@@ -339,7 +368,8 @@
       "safe_zone_notes": "initial-stage (primeros 3s, zoom-in takeover) vs feed-stage; evitar blanco puro en primeros 3s",
       "audio": "obligatorio, evitar sonidos abruptos en primeros 3s",
       "notes": "recomendado 9-15s",
-      "source_url": "https://ads.tiktok.com/help/article/tiktok-reservation-topview"
+      "source_url": "https://ads.tiktok.com/help/article/tiktok-reservation-topview",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "Google",
@@ -364,7 +394,8 @@
       "safe_zone_notes": null,
       "audio": null,
       "notes": "no se sube archivo directo, hereda specs de YouTube via link; duración libre, recomendado 30s",
-      "source_url": "https://support.google.com/google-ads/answer/17090561"
+      "source_url": "https://support.google.com/google-ads/answer/17090561",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "Google",
@@ -391,7 +422,8 @@
       "safe_zone_notes": null,
       "audio": "volumen codificado <= -12dB",
       "notes": "animación de apertura <=30s; carga inicial <=40KB",
-      "source_url": "https://support.google.com/displayvideo/answer/6006843"
+      "source_url": "https://support.google.com/displayvideo/answer/6006843",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "Google",
@@ -435,7 +467,8 @@
       "safe_zone_notes": null,
       "audio": "debe ir embebido en el video, no se aceptan archivos solo-audio",
       "notes": "sin min/max general para compra auction; reserva: min 12s, max 6min",
-      "source_url": "https://support.google.com/google-ads/answer/6055025"
+      "source_url": "https://support.google.com/google-ads/answer/6055025",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "Google",
@@ -474,7 +507,8 @@
       "captions_required": false,
       "safe_zone_notes": null,
       "audio": null,
-      "source_url": "https://support.google.com/google-ads/answer/11462260"
+      "source_url": "https://support.google.com/google-ads/answer/11462260",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "Google",
@@ -509,7 +543,8 @@
       "captions_required": false,
       "safe_zone_notes": null,
       "audio": null,
-      "source_url": "https://support.google.com/google-ads/answer/11462260"
+      "source_url": "https://support.google.com/google-ads/answer/11462260",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "Google",
@@ -546,7 +581,8 @@
       "captions_required": false,
       "safe_zone_notes": null,
       "audio": null,
-      "source_url": "https://support.google.com/google-ads/answer/6055025"
+      "source_url": "https://support.google.com/google-ads/answer/6055025",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "Google",
@@ -576,7 +612,8 @@
       "safe_zone_notes": null,
       "audio": null,
       "notes": "solo primeros 60s se reproducen en feed; overlay aparece a los 50s",
-      "source_url": "https://support.google.com/google-ads/answer/16041697"
+      "source_url": "https://support.google.com/google-ads/answer/16041697",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "Google",
@@ -607,7 +644,8 @@
       "safe_zone_notes": null,
       "audio": "puede correr sin sonido, no obligatorio",
       "notes": "min 10s para elegibilidad in-stream; recomendado >15s",
-      "source_url": "https://support.google.com/google-ads/answer/17141078"
+      "source_url": "https://support.google.com/google-ads/answer/17141078",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "Programmatic",
@@ -683,7 +721,8 @@
       "safe_zone_notes": null,
       "audio": "AAC-LC (Dolby 5.1 opcional CTV); 128-192kbps estéreo / 256-384kbps surround; 48kHz pref; loudness -24LKFS±2 (US) / -23LUFS±1 (EU); pico <=-6dBTP",
       "notes": "duraciones comunes: 6s, 15s, 20s, 30s; short-form 3-10s",
-      "source_url": "https://iabtechlab.com/wp-content/uploads/2022/03/Ad-Format-Guidelines_DV-CTV.pdf"
+      "source_url": "https://iabtechlab.com/wp-content/uploads/2022/03/Ad-Format-Guidelines_DV-CTV.pdf",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "LinkedIn",
@@ -719,7 +758,8 @@
       "captions_required": false,
       "safe_zone_notes": null,
       "audio": "AAC o MPEG4, sample rate <64kHz",
-      "source_url": "https://business.linkedin.com/advertise/ads/sponsored-content/video-ads/specs"
+      "source_url": "https://business.linkedin.com/advertise/ads/sponsored-content/video-ads/specs",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "LinkedIn",
@@ -742,7 +782,8 @@
       "safe_zone_notes": null,
       "audio": null,
       "notes": "no tiene tabla de specs propia; remite a specs de video nativo/post orgánico",
-      "source_url": "https://business.linkedin.com/advertise/ads/sponsored-content/thought-leader-ads/specs"
+      "source_url": "https://business.linkedin.com/advertise/ads/sponsored-content/thought-leader-ads/specs",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "Pinterest",
@@ -776,7 +817,8 @@
       "safe_zone_notes": null,
       "audio": null,
       "notes": "recomendado 6-15s; Pinterest no publica resolución/fps/bitrate/captions",
-      "source_url": "https://help.pinterest.com/en/business/article/pinterest-product-specs"
+      "source_url": "https://help.pinterest.com/en/business/article/pinterest-product-specs",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "Pinterest",
@@ -805,7 +847,8 @@
       "safe_zone_notes": null,
       "audio": null,
       "notes": "recomendado 6-15s",
-      "source_url": "https://help.pinterest.com/en/business/article/pinterest-product-specs"
+      "source_url": "https://help.pinterest.com/en/business/article/pinterest-product-specs",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "CTV",
@@ -848,7 +891,8 @@
       "safe_zone_notes": null,
       "audio": "AAC-LC/HE-AACv1 128-192kbps; 2.0 estéreo (5.1 opcional); 44.1/48kHz; loudness -24LKFS±2 (US/ATSC) o -23LUFS±1 (EU/EBU); pico <=-6dBTP",
       "notes": "duraciones estándar 6/15/30s; bumper 3-10s; hasta 60s. No hay plataforma CTV única, este es el común denominador de industria.",
-      "source_url": "https://iabtechlab.com/wp-content/uploads/2022/03/Ad-Format-Guidelines_DV-CTV.pdf"
+      "source_url": "https://iabtechlab.com/wp-content/uploads/2022/03/Ad-Format-Guidelines_DV-CTV.pdf",
+      "safe_zone_margins_pct": null
     },
     {
       "platform": "CTV",
@@ -906,7 +950,8 @@
       "safe_zone_notes": null,
       "audio": "AAC, mín 192kbps, 44.1/48kHz, mín 2 canales",
       "notes": "frame rate en modo constante",
-      "source_url": "https://advertising.amazon.com/resources/ad-specs/dsp/video/streaming-tv-prime-video-ads"
+      "source_url": "https://advertising.amazon.com/resources/ad-specs/dsp/video/streaming-tv-prime-video-ads",
+      "safe_zone_margins_pct": null
     }
   ]
 }

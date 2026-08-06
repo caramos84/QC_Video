@@ -261,6 +261,125 @@ def test_check_dominant_color_order_independence():
     assert status_a == status_b == FindingStatus.PASS
 
 
+def _ak_with_logo(frames_analyzed, frames_with_logo, detections):
+    return {
+        "visual": {
+            "summary": {
+                "logo_detection": {
+                    "reference_image": "logo.png",
+                    "frames_analyzed": frames_analyzed,
+                    "frames_with_logo": frames_with_logo,
+                    "detections": detections,
+                }
+            }
+        }
+    }
+
+
+_SAFE_MARGINS = {"technical": {"safe_zone_margins_pct": {"top": 14, "bottom": 35, "left": 6, "right": 6}}}
+
+
+def test_check_logo_presence_no_brief_is_informational_pass():
+    ak = _ak_with_logo(3, 0, [])
+    status, message, _ = checks.check_logo_presence(ak, {}, None)
+    assert status == FindingStatus.PASS
+    assert "no marca" in message
+
+
+def test_check_logo_presence_brief_without_requirement_is_informational_pass():
+    ak = _ak_with_logo(3, 0, [])
+    brief = {"brand": {"required_logo_present": False}}
+    status, _, _ = checks.check_logo_presence(ak, {}, brief)
+    assert status == FindingStatus.PASS
+
+
+def test_check_logo_presence_required_and_found_passes():
+    ak = _ak_with_logo(3, 1, [])
+    brief = {"brand": {"required_logo_present": True}}
+    status, _, _ = checks.check_logo_presence(ak, {}, brief)
+    assert status == FindingStatus.PASS
+
+
+def test_check_logo_presence_required_and_not_found_fails():
+    ak = _ak_with_logo(3, 0, [])
+    brief = {"brand": {"required_logo_present": True}}
+    status, _, _ = checks.check_logo_presence(ak, {}, brief)
+    assert status == FindingStatus.FAIL
+
+
+def test_check_logo_safe_zone_no_brief_is_informational_pass():
+    ak = _ak_with_logo(1, 1, [{"detected": True, "bbox_pct": {"x_min": 0, "y_min": 0, "x_max": 1, "y_max": 1}}])
+    status, message, _ = checks.check_logo_safe_zone(ak, _SAFE_MARGINS, None)
+    assert status == FindingStatus.PASS
+    assert "no marca" in message
+
+
+def test_check_logo_safe_zone_not_required_is_informational_pass():
+    ak = _ak_with_logo(1, 1, [{"detected": True, "bbox_pct": {"x_min": 0, "y_min": 0, "x_max": 1, "y_max": 1}}])
+    brief = {"brand": {"logo_safe_zone_required": False}}
+    status, _, _ = checks.check_logo_safe_zone(ak, _SAFE_MARGINS, brief)
+    assert status == FindingStatus.PASS
+
+
+def test_check_logo_safe_zone_no_detection_is_informational_pass():
+    ak = _ak_with_logo(3, 0, [])
+    brief = {"brand": {"logo_safe_zone_required": True}}
+    status, message, _ = checks.check_logo_safe_zone(ak, _SAFE_MARGINS, brief)
+    assert status == FindingStatus.PASS
+    assert "no hay posición" in message.lower()
+
+
+def test_check_logo_safe_zone_within_margins_passes():
+    # margins: top=14,bottom=35,left=6,right=6 -> área segura x[0.06,0.94] y[0.14,0.65]
+    detections = [{"detected": True, "bbox_pct": {"x_min": 0.30, "y_min": 0.30, "x_max": 0.50, "y_max": 0.50}}]
+    ak = _ak_with_logo(1, 1, detections)
+    brief = {"brand": {"logo_safe_zone_required": True}}
+    status, _, _ = checks.check_logo_safe_zone(ak, _SAFE_MARGINS, brief)
+    assert status == FindingStatus.PASS
+
+
+def test_check_logo_safe_zone_single_edge_violation_fails():
+    # y_min=0.05 < top margin 0.14 -> invade el margen superior
+    detections = [{"detected": True, "bbox_pct": {"x_min": 0.30, "y_min": 0.05, "x_max": 0.50, "y_max": 0.30}}]
+    ak = _ak_with_logo(1, 1, detections)
+    brief = {"brand": {"logo_safe_zone_required": True}}
+    status, _, evidence = checks.check_logo_safe_zone(ak, _SAFE_MARGINS, brief)
+    assert status == FindingStatus.FAIL
+    assert len(evidence["violations"]) == 1
+
+
+def test_check_logo_safe_zone_multiple_edge_violations_fails():
+    # Ejemplo real de Instagram Stories: x_min=0.70,y_min=0.05,x_max=0.95,y_max=0.18
+    # viola top (0.05 < 0.14) Y right (0.95 > 0.94) simultáneamente.
+    detections = [{"detected": True, "bbox_pct": {"x_min": 0.70, "y_min": 0.05, "x_max": 0.95, "y_max": 0.18}}]
+    ak = _ak_with_logo(1, 1, detections)
+    brief = {"brand": {"logo_safe_zone_required": True}}
+    status, _, evidence = checks.check_logo_safe_zone(ak, _SAFE_MARGINS, brief)
+    assert status == FindingStatus.FAIL
+    violated_edges = {v["edge"] for v in evidence["violations"]}
+    assert violated_edges == {"top", "right"}
+
+
+def test_check_logo_safe_zone_null_margin_is_skipped_not_failed():
+    # bottom=None -> aunque y_max=0.99 "violaría" el margen inferior si se
+    # evaluara, al no estar publicado se omite y no debe fallar por eso.
+    margins = {"technical": {"safe_zone_margins_pct": {"top": 14, "bottom": None, "left": None, "right": None}}}
+    detections = [{"detected": True, "bbox_pct": {"x_min": 0.30, "y_min": 0.30, "x_max": 0.50, "y_max": 0.99}}]
+    ak = _ak_with_logo(1, 1, detections)
+    brief = {"brand": {"logo_safe_zone_required": True}}
+    status, _, _ = checks.check_logo_safe_zone(ak, margins, brief)
+    assert status == FindingStatus.PASS
+
+
+def test_check_logo_safe_zone_boundary_exactly_at_margin_passes():
+    # x_min exactamente en left/100 = 0.06 -> no debe contar como violación (no es '<').
+    detections = [{"detected": True, "bbox_pct": {"x_min": 0.06, "y_min": 0.30, "x_max": 0.50, "y_max": 0.50}}]
+    ak = _ak_with_logo(1, 1, detections)
+    brief = {"brand": {"logo_safe_zone_required": True}}
+    status, _, _ = checks.check_logo_safe_zone(ak, _SAFE_MARGINS, brief)
+    assert status == FindingStatus.PASS
+
+
 def test_check_audio_present():
     assert checks.check_audio_present(_ak(), PROFILE, None)[0] == FindingStatus.PASS
     no_audio = _ak(**{"asset.metadata.audio_present": False})

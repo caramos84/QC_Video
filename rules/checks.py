@@ -317,6 +317,84 @@ def check_dominant_color(asset_knowledge: dict, profile: dict, brief: dict | Non
     return FindingStatus.FAIL, fail_message, evidence
 
 
+def check_logo_presence(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    required = ((brief or {}).get("brand") or {}).get("required_logo_present")
+    logo_detection = get_field(asset_knowledge, "visual.summary.logo_detection")
+    frames_with_logo = logo_detection.get("frames_with_logo", 0)
+    frames_analyzed = logo_detection.get("frames_analyzed", 0)
+    evidence = {
+        "frames_with_logo": frames_with_logo,
+        "frames_analyzed": frames_analyzed,
+        "reference_image": logo_detection.get("reference_image"),
+    }
+
+    if not required:
+        return (
+            FindingStatus.PASS,
+            "Presencia de logo no evaluada: el brief no marca brand.required_logo_present.",
+            evidence,
+        )
+    if frames_with_logo > 0:
+        return (
+            FindingStatus.PASS,
+            f"Logo detectado en {frames_with_logo}/{frames_analyzed} frames analizados.",
+            evidence,
+        )
+    return (
+        FindingStatus.FAIL,
+        f"Logo no detectado en ninguno de los {frames_analyzed} frames analizados.",
+        evidence,
+    )
+
+
+def check_logo_safe_zone(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    safe_zone_required = ((brief or {}).get("brand") or {}).get("logo_safe_zone_required")
+    logo_detection = get_field(asset_knowledge, "visual.summary.logo_detection")
+    margins = get_field(profile, "technical.safe_zone_margins_pct")
+    frames_with_logo = logo_detection.get("frames_with_logo", 0)
+    detections = logo_detection.get("detections", [])
+    evidence = {"margins_pct": margins, "frames_with_logo": frames_with_logo}
+
+    if not safe_zone_required:
+        return (
+            FindingStatus.PASS,
+            "Zona segura de logo no evaluada: el brief no marca brand.logo_safe_zone_required.",
+            evidence,
+        )
+    if frames_with_logo == 0:
+        return (
+            FindingStatus.PASS,
+            "Logo no detectado en ningún frame; no hay posición que evaluar.",
+            evidence,
+        )
+
+    violations = []
+    for d in detections:
+        if not d.get("detected"):
+            continue
+        bbox = d.get("bbox_pct") or {}
+        edges = [
+            ("left", margins.get("left"), bbox.get("x_min"), lambda v, m: v < m / 100),
+            ("right", margins.get("right"), bbox.get("x_max"), lambda v, m: v > 1 - m / 100),
+            ("top", margins.get("top"), bbox.get("y_min"), lambda v, m: v < m / 100),
+            ("bottom", margins.get("bottom"), bbox.get("y_max"), lambda v, m: v > 1 - m / 100),
+        ]
+        for edge, margin, value, violates in edges:
+            if margin is None:
+                continue  # borde sin dato publicado -> no se puede validar, se omite
+            if violates(value, margin):
+                violations.append({"frame": d.get("frame"), "time": d.get("time"), "edge": edge, "bbox_pct": bbox})
+
+    evidence["violations"] = violations
+    if violations:
+        return FindingStatus.FAIL, f"{len(violations)} detección(es) del logo invaden la zona segura.", evidence
+    return (
+        FindingStatus.PASS,
+        f"Las {frames_with_logo} detección(es) del logo respetan la zona segura configurada.",
+        evidence,
+    )
+
+
 def check_audio_present(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
     audio_present = get_field(asset_knowledge, "asset.metadata.audio_present")
     evidence = {"audio_present": audio_present}
@@ -378,6 +456,8 @@ CHECK_REGISTRY: dict[str, CheckFn] = {
     "check_text_density": check_text_density,
     "check_cta_detection": check_cta_detection,
     "check_dominant_color": check_dominant_color,
+    "check_logo_presence": check_logo_presence,
+    "check_logo_safe_zone": check_logo_safe_zone,
     "check_audio_present": check_audio_present,
     "check_speech_detected": check_speech_detected,
     "check_language": check_language,

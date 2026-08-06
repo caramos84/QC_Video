@@ -28,5 +28,6 @@ technical:
   bitrate_kbps: 2500
   captions_required: false
   safe_zone_notes: zonas seguras descargables, no cuantificadas en px por la fuente
+  safe_zone_margins_pct: null
   audio: obligatorio
 source_url: https://ads.tiktok.com/help/article/tiktok-reservation-in-feed-ads-reach-frequency

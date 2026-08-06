@@ -42,6 +42,16 @@
         "bitrate_kbps": {},
         "captions_required": {},
         "safe_zone_notes": { "type": ["string", "null"] },
+        "safe_zone_margins_pct": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "properties": {
+            "top": { "type": ["number", "null"] },
+            "bottom": { "type": ["number", "null"] },
+            "left": { "type": ["number", "null"] },
+            "right": { "type": ["number", "null"] }
+          }
+        },
         "audio": { "type": ["string", "null"] }
       }
     }

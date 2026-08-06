@@ -25,6 +25,7 @@ technical:
   bitrate_kbps: null
   captions_required: false
   safe_zone_notes: null
+  safe_zone_margins_pct: null
   audio: puede correr sin sonido, no obligatorio
 source_url: https://support.google.com/google-ads/answer/17141078
 notes: min 10s para elegibilidad in-stream; recomendado >15s

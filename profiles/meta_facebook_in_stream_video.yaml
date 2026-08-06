@@ -26,6 +26,7 @@ technical:
   bitrate_kbps: null
   captions_required: false
   safe_zone_notes: null
+  safe_zone_margins_pct: null
   audio: AAC estéreo >128kbps
 source_url: https://www.facebook.com/business/ads-guide/update/video/facebook-instream-video
 notes: Desktop 5-15s; mobile 5s-10min

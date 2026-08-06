@@ -118,20 +118,29 @@ rules:
   - rule_id: VISUAL_LOGO_PRESENCE
     layer: visual
     default_severity: error_de_marca
-    implementable: false
-    description: "El logo de marca aparece en el video."
-    requires_fields: ["visual.logo_detection"]
+    implementable: true
+    description: >-
+      El logo de marca (brief.brand.logo_reference_image) aparece en al menos
+      un frame, vía ORB feature matching en Notebook 02 (opcional). Si el
+      brief no marca brand.required_logo_present, PASS informativo -- mismo
+      patrón que VISUAL_CTA_DETECTION / VISUAL_DOMINANT_COLOR.
+    requires_fields: ["visual.summary.logo_detection"]
     requires_profile_fields: []
-    not_evaluated_reason: "no_cv_pipeline (Notebook 02 solo hace OCR de texto, no detección de logo)"
+    check_fn: check_logo_presence
 
   - rule_id: VISUAL_LOGO_SAFE_ZONE
     layer: visual
     default_severity: error_de_marca
-    implementable: false
-    description: "El logo permanece dentro de la zona segura del placement."
-    requires_fields: ["visual.logo_detection"]
-    requires_profile_fields: ["technical.safe_zone_notes"]
-    not_evaluated_reason: "no_cv_pipeline"
+    implementable: true
+    description: >-
+      El logo detectado (visual.summary.logo_detection) permanece dentro de
+      los márgenes de zona segura estructurados del placement
+      (technical.safe_zone_margins_pct, porcentajes). Si el brief no marca
+      brand.logo_safe_zone_required, PASS informativo. Si el logo no fue
+      detectado en ningún frame, PASS informativo (nada que posicionar).
+    requires_fields: ["visual.summary.logo_detection"]
+    requires_profile_fields: ["technical.safe_zone_margins_pct"]
+    check_fn: check_logo_safe_zone
 
   - rule_id: VISUAL_CTA_DETECTION
     layer: visual

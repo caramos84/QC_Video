@@ -47,6 +47,7 @@ technical:
     recommended: 50000
   captions_required: false
   safe_zone_notes: null
+  safe_zone_margins_pct: null
   audio: AAC, mín 192kbps, 44.1/48kHz, mín 2 canales
 source_url: https://advertising.amazon.com/resources/ad-specs/dsp/video/streaming-tv-prime-video-ads
 notes: frame rate en modo constante

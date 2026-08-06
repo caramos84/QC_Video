@@ -26,5 +26,10 @@ technical:
   bitrate_kbps: null
   captions_required: false
   safe_zone_notes: ~14% top, 35% bottom, 6% cada lado; mín ancho 500px si dura >=30s
+  safe_zone_margins_pct:
+    top: 14
+    bottom: 35
+    left: 6
+    right: 6
   audio: AAC estéreo >=128kbps, muy recomendado
 source_url: https://www.facebook.com/business/ads-guide/update/video/instagram-reels

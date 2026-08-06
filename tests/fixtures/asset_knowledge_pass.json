@@ -27,7 +27,28 @@
       "total_words": 15,
       "avg_words": 5.0,
       "max_words_in_frame": 10,
-      "dominant_colors": ["#E2001A", "#FFFFFF", "#1A1A1A", "#8A8A8A", "#3D6EF2"]
+      "dominant_colors": ["#E2001A", "#FFFFFF", "#1A1A1A", "#8A8A8A", "#3D6EF2"],
+      "logo_detection": {
+        "reference_image": "fixture_logo.png",
+        "frames_analyzed": 3,
+        "frames_with_logo": 1,
+        "detections": [
+          {
+            "frame": "frame_0000.jpg",
+            "time": 0,
+            "detected": true,
+            "match_count": 23,
+            "bbox_pct": {"x_min": 0.30, "y_min": 0.30, "x_max": 0.50, "y_max": 0.50}
+          },
+          {
+            "frame": "frame_0001.jpg",
+            "time": 1,
+            "detected": false,
+            "match_count": 2,
+            "bbox_pct": null
+          }
+        ]
+      }
     },
     "frames": [
       {

@@ -28,5 +28,6 @@ technical:
   bitrate_kbps: 516
   captions_required: false
   safe_zone_notes: zonas seguras descargables, no cuantificadas en px por la fuente
+  safe_zone_margins_pct: null
   audio: obligatorio (todo creativo debe tener sonido)
 source_url: https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads

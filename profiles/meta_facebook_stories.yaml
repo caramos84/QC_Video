@@ -27,5 +27,10 @@ technical:
   bitrate_kbps: null
   captions_required: false
   safe_zone_notes: ~14% margen superior, ~20% margen inferior
+  safe_zone_margins_pct:
+    top: 14
+    bottom: 20
+    left: null
+    right: null
   audio: AAC estéreo >=128kbps
 source_url: https://www.facebook.com/business/ads-guide/update/video/facebook-story

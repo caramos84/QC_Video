@@ -33,6 +33,7 @@ technical:
   - 30000
   captions_required: false
   safe_zone_notes: null
+  safe_zone_margins_pct: null
   audio: AAC-LC/HE-AACv1 128-192kbps; 2.0 estéreo (5.1 opcional); 44.1/48kHz; loudness -24LKFS±2 (US/ATSC)
     o -23LUFS±1 (EU/EBU); pico <=-6dBTP
 source_url: https://iabtechlab.com/wp-content/uploads/2022/03/Ad-Format-Guidelines_DV-CTV.pdf

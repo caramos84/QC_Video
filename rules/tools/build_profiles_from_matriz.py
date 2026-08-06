@@ -48,6 +48,7 @@ TECHNICAL_FIELDS = (
     "vast_versions_supported",
     "captions_required",
     "safe_zone_notes",
+    "safe_zone_margins_pct",
     "audio",
 )
 
