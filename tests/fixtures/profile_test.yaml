@@ -18,4 +18,7 @@ technical:
   safe_zone_notes: null
   safe_zone_margins_pct: {top: 14, bottom: 35, left: 6, right: 6}
   audio: "recomendado"
+  loudness_targets_lufs:
+    - {region: US, target_lufs: -24, tolerance_lu: 1}
+    - {region: EU, target_lufs: -16, tolerance_lu: 1}
 source_url: "https://example.com/test-profile"

@@ -31,6 +31,11 @@ TEXT_DENSITY_WARN_THRESHOLD = 40
 # moderado sin dejar pasar colores de familia de tono claramente distinta.
 DOMINANT_COLOR_DISTANCE_THRESHOLD = 60
 
+# Umbral heurístico (segundos) de silencio continuo máximo aceptable dentro
+# del audio. Sin fuente de datos por canal/brief -- mismo patrón que
+# TEXT_DENSITY_WARN_THRESHOLD, un proxy documentado, no un estándar publicado.
+MAX_SILENCE_DURATION_WARN_S = 2.0
+
 # Tolerancia relativa al comparar el aspect ratio real del asset contra los
 # aspect ratios soportados por el placement.
 ASPECT_RATIO_TOLERANCE = 0.02
@@ -438,6 +443,64 @@ def check_narration_present(asset_knowledge: dict, profile: dict, brief: dict | 
     return FindingStatus.PASS, f"{word_count} palabras transcritas.", evidence
 
 
+def check_silence_detection(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    silence_analysis = get_field(asset_knowledge, "audio.summary.silence_analysis")
+    max_silence = silence_analysis.get("max_silence_s", 0)
+    evidence = {
+        "max_silence_s": max_silence,
+        "threshold_s": MAX_SILENCE_DURATION_WARN_S,
+        "silent_segments": silence_analysis.get("silent_segments"),
+    }
+
+    if max_silence > MAX_SILENCE_DURATION_WARN_S:
+        return (
+            FindingStatus.FAIL,
+            f"Silencio de {max_silence}s excede el máximo aceptable de {MAX_SILENCE_DURATION_WARN_S}s.",
+            evidence,
+        )
+    return (
+        FindingStatus.PASS,
+        f"Silencio máximo {max_silence}s dentro de lo aceptable.",
+        evidence,
+    )
+
+
+def check_volume_loudness(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    loudness_analysis = get_field(asset_knowledge, "audio.summary.loudness_analysis")
+    measured = loudness_analysis.get("integrated_lufs")
+    targets = get_field(profile, "technical.loudness_targets_lufs")
+    evidence = {"measured_lufs": measured, "targets": targets}
+
+    if measured is None:
+        return (
+            FindingStatus.FAIL,
+            "No se pudo medir el loudness del audio (clip muy corto o silencioso).",
+            evidence,
+        )
+
+    scored = [{**t, "distance": round(abs(measured - t["target_lufs"]), 2)} for t in targets]
+    matches = [t for t in scored if t["distance"] <= t["tolerance_lu"]]
+    evidence["scored_targets"] = scored
+
+    if matches:
+        best = min(matches, key=lambda t: t["distance"])
+        evidence["closest_match"] = best
+        pass_message = (
+            f"Loudness medido {measured} LUFS dentro de tolerancia del target {best['region']} "
+            f"({best['target_lufs']}±{best['tolerance_lu']} LUFS, distancia {best['distance']})."
+        )
+        return FindingStatus.PASS, pass_message, evidence
+
+    closest_miss = min(scored, key=lambda t: t["distance"])
+    evidence["closest_match"] = closest_miss
+    fail_message = (
+        f"Loudness medido {measured} LUFS fuera de tolerancia de todos los targets publicados "
+        f"(más cercano: {closest_miss['region']} {closest_miss['target_lufs']}±{closest_miss['tolerance_lu']} LUFS, "
+        f"distancia {closest_miss['distance']})."
+    )
+    return FindingStatus.FAIL, fail_message, evidence
+
+
 def not_evaluated(reason: str) -> CheckResult:
     """Factory compartido por todas las reglas con implementable: false."""
     return FindingStatus.NOT_EVALUATED, f"No evaluado: {reason}", None
@@ -462,4 +525,6 @@ CHECK_REGISTRY: dict[str, CheckFn] = {
     "check_speech_detected": check_speech_detected,
     "check_language": check_language,
     "check_narration_present": check_narration_present,
+    "check_silence_detection": check_silence_detection,
+    "check_volume_loudness": check_volume_loudness,
 }

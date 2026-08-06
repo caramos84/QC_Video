@@ -110,7 +110,7 @@ frame_analysis/
 
 ### Notebook 03 — Audio Analyzer
 
-Processes the extracted audio with Whisper ("base" model). **Does not yet do audio-quality analysis** — no silence detection, no loudness/volume measurement, no music-vs-voice detection. Those are tracked as `NOT_EVALUATED` rules in the rules engine until a real audio-quality pipeline exists.
+Processes the extracted audio with Whisper ("base" model), plus silence detection (RMS windowing over the raw waveform) and loudness measurement (`pyloudnorm`, ITU-R BS.1770 — real LUFS/LKFS, comparable against the targets a couple of placements publish in `context/matriz_medios.json`). **Does not yet classify music vs. voice** — that's tracked as a `NOT_EVALUATED` rule (judged unreliable without an ML model, same reasoning as deferring product/composition detection in Notebook 02).
 
 Capabilities:
 
@@ -118,6 +118,8 @@ Capabilities:
 - Speech detection
 - Language detection
 - Word counting
+- Silence detection (contiguous silent segments ≥0.5s, RMS threshold)
+- Integrated loudness measurement (LUFS, ITU-R BS.1770)
 
 Outputs:
 
@@ -146,7 +148,7 @@ qc_summary.md
 
 `rules/` is a standalone, testable Python package (`pytest`, 45 tests, 81% coverage) — see [`context/matriz_medios.md`](context/matriz_medios.md) for how the technical specs were sourced.
 
-- **`rules/catalog.yaml`** — 26 rules across 4 layers (técnica / visual / sonora / semántica). 18 are implemented against what Notebooks 01–03 actually produce today: codec, frame rate and file size (via `ffprobe`/`os.path.getsize` in Notebook 01); CTA detection (reuses the OCR text Notebook 02 already extracts); dominant-color matching (`cv2.kmeans` over sampled frame pixels); logo presence + safe-zone position (`cv2.ORB` feature matching against an optional reference logo image uploaded in Notebook 02 — see below). 8 remain `NOT_EVALUATED` stubs with an explicit reason (no product-detection/composition CV, no audio-quality pipeline, no semantic/LLM layer) — missing data is never silently treated as a pass. **`rules/` itself still has zero image/ML dependencies** — all pixel-level computation happens upstream in the notebooks; the package only ever compares already-computed JSON fields (colors as hex strings, OCR text as strings, logo bounding boxes as 0–1 fractions), which is what keeps it fast/testable/CI-friendly.
+- **`rules/catalog.yaml`** — 26 rules across 4 layers (técnica / visual / sonora / semántica). 20 are implemented against what Notebooks 01–03 actually produce today: codec, frame rate and file size (via `ffprobe`/`os.path.getsize` in Notebook 01); CTA detection (reuses the OCR text Notebook 02 already extracts); dominant-color matching (`cv2.kmeans` over sampled frame pixels); logo presence + safe-zone position (`cv2.ORB` feature matching against an optional reference logo image uploaded in Notebook 02); silence detection and loudness/LUFS measurement (RMS windowing + `pyloudnorm`/ITU-R BS.1770 in Notebook 03 — see below). 6 remain `NOT_EVALUATED` stubs with an explicit reason (no product-detection/composition CV, no music-vs-voice classification, no semantic/LLM layer) — missing data is never silently treated as a pass. **`rules/` itself still has zero image/audio/ML dependencies** — all signal-level computation happens upstream in the notebooks; the package only ever compares already-computed JSON fields (colors as hex strings, OCR text as strings, logo bounding boxes as 0–1 fractions, LUFS as a number), which is what keeps it fast/testable/CI-friendly.
 - **Logo detection is brief-coupled by design**: unlike every other check, matching a reference logo needs the actual reference image at CV-computation time, so Notebook 02 takes an *optional* reference-logo upload (skip it and `logo_detection` stays `null` → both logo rules fall back to `NOT_EVALUATED`, never a false `FAIL`). This means a given `asset_knowledge.json` is only meaningful for logo checks against the one brief/logo used when Notebook 02 ran — re-run Notebook 02 if you need to check the same footage against a different brand's logo. Accepted tradeoff: in practice one ad creative belongs to one campaign anyway.
 - **`profiles/`** — 25 channel/placement profiles (Meta, TikTok, Google/YouTube/DV360, LinkedIn, Pinterest, CTV), auto-generated from [`context/matriz_medios.json`](context/matriz_medios.json) via `python -m rules.tools.build_profiles_from_matriz`. Never hand-edit a profile — edit the matrix and regenerate.
 - **`samples/briefs/`** — per-campaign business rules (CTA text, legal disclaimers, brand colors/logo) that can override a rule's severity for that campaign.
@@ -181,7 +183,7 @@ This architecture provides:
 # Planned Features (not yet implemented — tracked as `NOT_EVALUATED` catalog rules)
 
 - Product detection / composition analysis (`VISUAL_PRODUCT_DETECTION`, `VISUAL_COMPOSITION`)
-- Silence / loudness / music-vs-voice audio-quality analysis (`SONORA_SILENCE_DETECTION`, `SONORA_VOLUME_LOUDNESS`, `SONORA_MUSIC_VS_VOICE`)
+- Music-vs-voice classification (`SONORA_MUSIC_VS_VOICE`) — deferred, unreliable without a real ML model
 - Semantic/brief compliance via LLM (`SEMANTICA_*`) — message, brand positioning, guideline compliance
 - Dashboard (SPHERE UI — design system + components already available, see below)
 - Harness CI provisioning (pipeline-as-code already written, account setup pending)
@@ -253,8 +255,9 @@ QC_Video/
 - [x] Rule Profiles (25, generated from the media specs matrix)
 - [x] Codec/frame-rate/file-size technical checks (`TECH_CODEC`, `TECH_FRAME_RATE`, `TECH_FILE_SIZE`)
 - [x] CTA detection via existing OCR text + dominant-color brand matching via k-means (`VISUAL_CTA_DETECTION`, `VISUAL_DOMINANT_COLOR`)
-- [x] Logo presence + safe-zone position via ORB feature matching against an optional reference image (`VISUAL_LOGO_PRESENCE`, `VISUAL_LOGO_SAFE_ZONE` — 18/26 catalog rules now implemented)
-- [ ] Product detection / composition analysis (`VISUAL_PRODUCT_DETECTION`, `VISUAL_COMPOSITION` — deferred, product varies too much for reference-image matching to be reliable; composition is largely subjective/heuristic)
+- [x] Logo presence + safe-zone position via ORB feature matching against an optional reference image (`VISUAL_LOGO_PRESENCE`, `VISUAL_LOGO_SAFE_ZONE`)
+- [x] Silence detection + loudness/LUFS measurement (`SONORA_SILENCE_DETECTION`, `SONORA_VOLUME_LOUDNESS` — 20/26 catalog rules now implemented)
+- [ ] Product detection / composition analysis / music-vs-voice classification (`VISUAL_PRODUCT_DETECTION`, `VISUAL_COMPOSITION`, `SONORA_MUSIC_VS_VOICE` — deferred, all three judged unreliable without a real ML model or reference-image mechanism that doesn't exist yet)
 - [ ] Audio-quality checks (silence/loudness/music — needs a real audio-quality pipeline)
 - [ ] Semantic/brief compliance (needs an LLM layer)
 - [ ] Dashboard (SPHERE UI)

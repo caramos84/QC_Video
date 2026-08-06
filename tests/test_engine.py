@@ -7,7 +7,7 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
 
 def test_run_qc_all_pass_still_review_due_to_coverage(asset_pass, test_profile, catalog, scoring_config):
-    # Con solo 18/26 reglas implementables, un asset perfecto NUNCA debe salir
+    # Con solo 20/26 reglas implementables, un asset perfecto NUNCA debe salir
     # PASS todavía -- es la decisión de negocio confirmada con el usuario.
     report = run_qc(asset_pass, test_profile, brief=None, catalog=catalog, scoring_config=scoring_config)
     implementable_findings = [f for f in report.findings if f.status != FindingStatus.NOT_EVALUATED]
@@ -38,6 +38,8 @@ def test_run_qc_missing_visual_audio_sections_degrades_gracefully(
     # Todo lo que depende de visual.summary / audio.summary -> NOT_EVALUATED, no crash.
     assert by_id["VISUAL_TEXT_PRESENCE"].status == FindingStatus.NOT_EVALUATED
     assert by_id["SONORA_SPEECH_DETECTED"].status == FindingStatus.NOT_EVALUATED
+    assert by_id["SONORA_SILENCE_DETECTION"].status == FindingStatus.NOT_EVALUATED
+    assert by_id["SONORA_VOLUME_LOUDNESS"].status == FindingStatus.NOT_EVALUATED
 
 
 def test_brief_severity_override_applies_even_when_not_evaluated(asset_pass, test_profile, test_brief, catalog, scoring_config):
@@ -68,6 +70,14 @@ def test_dominant_color_evaluated_and_passes_with_brief(asset_pass, test_profile
     report = run_qc(asset_pass, test_profile, brief=test_brief, catalog=catalog, scoring_config=scoring_config)
     color_finding = next(f for f in report.findings if f.rule_id == "VISUAL_DOMINANT_COLOR")
     assert color_finding.status == FindingStatus.PASS
+
+
+def test_silence_and_loudness_evaluated_and_pass(asset_pass, test_profile, catalog, scoring_config):
+    report = run_qc(asset_pass, test_profile, brief=None, catalog=catalog, scoring_config=scoring_config)
+    silence = next(f for f in report.findings if f.rule_id == "SONORA_SILENCE_DETECTION")
+    loudness = next(f for f in report.findings if f.rule_id == "SONORA_VOLUME_LOUDNESS")
+    assert silence.status == FindingStatus.PASS
+    assert loudness.status == FindingStatus.PASS
 
 
 def test_run_qc_from_paths_matches_run_qc(asset_missing_data, test_profile):

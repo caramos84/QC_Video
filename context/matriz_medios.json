@@ -722,7 +722,19 @@
       "audio": "AAC-LC (Dolby 5.1 opcional CTV); 128-192kbps estéreo / 256-384kbps surround; 48kHz pref; loudness -24LKFS±2 (US) / -23LUFS±1 (EU); pico <=-6dBTP",
       "notes": "duraciones comunes: 6s, 15s, 20s, 30s; short-form 3-10s",
       "source_url": "https://iabtechlab.com/wp-content/uploads/2022/03/Ad-Format-Guidelines_DV-CTV.pdf",
-      "safe_zone_margins_pct": null
+      "safe_zone_margins_pct": null,
+      "loudness_targets_lufs": [
+        {
+          "region": "US",
+          "target_lufs": -24,
+          "tolerance_lu": 2
+        },
+        {
+          "region": "EU",
+          "target_lufs": -23,
+          "tolerance_lu": 1
+        }
+      ]
     },
     {
       "platform": "LinkedIn",
@@ -892,7 +904,19 @@
       "audio": "AAC-LC/HE-AACv1 128-192kbps; 2.0 estéreo (5.1 opcional); 44.1/48kHz; loudness -24LKFS±2 (US/ATSC) o -23LUFS±1 (EU/EBU); pico <=-6dBTP",
       "notes": "duraciones estándar 6/15/30s; bumper 3-10s; hasta 60s. No hay plataforma CTV única, este es el común denominador de industria.",
       "source_url": "https://iabtechlab.com/wp-content/uploads/2022/03/Ad-Format-Guidelines_DV-CTV.pdf",
-      "safe_zone_margins_pct": null
+      "safe_zone_margins_pct": null,
+      "loudness_targets_lufs": [
+        {
+          "region": "US",
+          "target_lufs": -24,
+          "tolerance_lu": 2
+        },
+        {
+          "region": "EU",
+          "target_lufs": -23,
+          "tolerance_lu": 1
+        }
+      ]
     },
     {
       "platform": "CTV",

@@ -41,6 +41,18 @@ PROFILE_FRAME_RATE_MIN = {
     }
 }
 
+# Targets sintéticos, no solapados (a diferencia de los reales de la matriz,
+# donde el rango EU queda subsumido en el de US) para poder testear ambas
+# ramas por separado.
+PROFILE_LOUDNESS = {
+    "technical": {
+        "loudness_targets_lufs": [
+            {"region": "US", "target_lufs": -24, "tolerance_lu": 1},
+            {"region": "EU", "target_lufs": -16, "tolerance_lu": 1},
+        ]
+    }
+}
+
 
 def test_check_aspect_ratio_pass():
     status, _, _ = checks.check_aspect_ratio(_ak(), PROFILE, None)
@@ -414,6 +426,66 @@ def test_check_narration_present():
     assert checks.check_narration_present(_ak(), PROFILE, None)[0] == FindingStatus.PASS
     silent = _ak(**{"audio.summary.word_count": 0})
     assert checks.check_narration_present(silent, PROFILE, None)[0] == FindingStatus.FAIL
+
+
+def test_check_silence_detection_under_threshold_passes():
+    ak = _ak(**{"audio.summary.silence_analysis": {"max_silence_s": 1.0, "silent_segments": []}})
+    assert checks.check_silence_detection(ak, PROFILE, None)[0] == FindingStatus.PASS
+
+
+def test_check_silence_detection_at_threshold_boundary_passes():
+    ak = _ak(**{"audio.summary.silence_analysis": {"max_silence_s": checks.MAX_SILENCE_DURATION_WARN_S, "silent_segments": []}})
+    assert checks.check_silence_detection(ak, PROFILE, None)[0] == FindingStatus.PASS
+
+
+def test_check_silence_detection_over_threshold_fails():
+    ak = _ak(**{"audio.summary.silence_analysis": {"max_silence_s": 2.5, "silent_segments": [{"start": 1.0, "end": 3.5}]}})
+    assert checks.check_silence_detection(ak, PROFILE, None)[0] == FindingStatus.FAIL
+
+
+def test_check_volume_loudness_within_us_target_only():
+    ak = _ak(**{"audio.summary.loudness_analysis": {"integrated_lufs": -25.0}})
+    status, _, evidence = checks.check_volume_loudness(ak, PROFILE_LOUDNESS, None)
+    assert status == FindingStatus.PASS
+    assert evidence["closest_match"]["region"] == "US"
+
+
+def test_check_volume_loudness_within_eu_target_only():
+    ak = _ak(**{"audio.summary.loudness_analysis": {"integrated_lufs": -15.5}})
+    status, _, evidence = checks.check_volume_loudness(ak, PROFILE_LOUDNESS, None)
+    assert status == FindingStatus.PASS
+    assert evidence["closest_match"]["region"] == "EU"
+
+
+def test_check_volume_loudness_outside_both_targets_fails():
+    ak = _ak(**{"audio.summary.loudness_analysis": {"integrated_lufs": -20.0}})
+    status, _, _ = checks.check_volume_loudness(ak, PROFILE_LOUDNESS, None)
+    assert status == FindingStatus.FAIL
+
+
+def test_check_volume_loudness_unmeasurable_is_fail():
+    ak = _ak(**{"audio.summary.loudness_analysis": {"integrated_lufs": None}})
+    status, message, _ = checks.check_volume_loudness(ak, PROFILE_LOUDNESS, None)
+    assert status == FindingStatus.FAIL
+    assert "no se pudo medir" in message.lower()
+
+
+def test_check_volume_loudness_closer_target_determines_message():
+    # -24.3 está dentro de tolerancia de AMBOS targets reales de la matriz
+    # (US -24±2, EU -23±1); el más cercano (US) debe ser el que se reporta.
+    real_targets = {
+        "technical": {
+            "loudness_targets_lufs": [
+                {"region": "US", "target_lufs": -24, "tolerance_lu": 2},
+                {"region": "EU", "target_lufs": -23, "tolerance_lu": 1},
+            ]
+        }
+    }
+    ak = _ak(**{"audio.summary.loudness_analysis": {"integrated_lufs": -24.3}})
+    status, message, evidence = checks.check_volume_loudness(ak, real_targets, None)
+    assert status == FindingStatus.PASS
+    assert evidence["closest_match"]["region"] == "US"
+    assert "US" in message
 
 
 def test_not_evaluated_factory():

@@ -225,20 +225,27 @@ rules:
   - rule_id: SONORA_SILENCE_DETECTION
     layer: sonora
     default_severity: error_tecnico
-    implementable: false
-    description: "No hay silencios prolongados no intencionales en el audio."
-    requires_fields: ["audio.silence_analysis"]
+    implementable: true
+    description: >-
+      No hay silencios prolongados no intencionales en el audio (umbral
+      heurístico MAX_SILENCE_DURATION_WARN_S, sin fuente de datos por
+      canal/brief -- mismo patrón que VISUAL_TEXT_DENSITY).
+    requires_fields: ["audio.summary.silence_analysis"]
     requires_profile_fields: []
-    not_evaluated_reason: "no_audio_quality_pipeline (Notebook 03 solo transcribe, no analiza silencios)"
+    check_fn: check_silence_detection
 
   - rule_id: SONORA_VOLUME_LOUDNESS
     layer: sonora
     default_severity: error_tecnico
-    implementable: false
-    description: "El nivel de loudness del audio está dentro de rango aceptable."
-    requires_fields: ["audio.loudness_analysis"]
-    requires_profile_fields: ["technical.audio"]
-    not_evaluated_reason: "no_audio_quality_pipeline"
+    implementable: true
+    description: >-
+      El loudness integrado (ITU-R BS.1770 vía pyloudnorm) está dentro de
+      tolerancia de al menos uno de los targets LUFS/LKFS publicados por el
+      placement (technical.loudness_targets_lufs). Solo 2/25 placements
+      publican targets numéricos; el resto queda NOT_EVALUATED.
+    requires_fields: ["audio.summary.loudness_analysis"]
+    requires_profile_fields: ["technical.loudness_targets_lufs"]
+    check_fn: check_volume_loudness
 
   - rule_id: SONORA_MUSIC_VS_VOICE
     layer: sonora

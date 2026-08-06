@@ -76,7 +76,19 @@
       "audio_present": true,
       "speech_detected": true,
       "word_count": 20,
-      "segments": 2
+      "segments": 2,
+      "silence_analysis": {
+        "silence_threshold_db": -40,
+        "min_silence_duration_s": 0.5,
+        "silent_segments": [],
+        "total_silence_s": 0.0,
+        "silence_ratio": 0.0,
+        "max_silence_s": 0.0
+      },
+      "loudness_analysis": {
+        "integrated_lufs": -24.0,
+        "measurement_standard": "ITU-R BS.1770 (pyloudnorm)"
+      }
     },
     "transcript": {"text": "Texto de ejemplo para el fixture.", "segments": [], "language": "es"}
   }
