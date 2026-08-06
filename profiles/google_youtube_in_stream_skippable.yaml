@@ -36,6 +36,7 @@ technical:
   bitrate_kbps: null
   captions_required: false
   safe_zone_notes: null
+  safe_zone_margins_pct: null
   audio: debe ir embebido en el video, no se aceptan archivos solo-audio
 source_url: https://support.google.com/google-ads/answer/6055025
 notes: 'sin min/max general para compra auction; reserva: min 12s, max 6min'

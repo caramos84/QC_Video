@@ -51,8 +51,8 @@ def test_load_catalog_returns_all_rules():
     assert len(rules) == 26
     implementable = [r for r in rules if r.implementable]
     stubs = [r for r in rules if not r.implementable]
-    assert len(implementable) == 16
-    assert len(stubs) == 10
+    assert len(implementable) == 20
+    assert len(stubs) == 6
 
 
 def test_load_catalog_implementable_rules_have_check_fn():

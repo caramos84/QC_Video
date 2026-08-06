@@ -31,6 +31,11 @@ TEXT_DENSITY_WARN_THRESHOLD = 40
 # moderado sin dejar pasar colores de familia de tono claramente distinta.
 DOMINANT_COLOR_DISTANCE_THRESHOLD = 60
 
+# Umbral heurístico (segundos) de silencio continuo máximo aceptable dentro
+# del audio. Sin fuente de datos por canal/brief -- mismo patrón que
+# TEXT_DENSITY_WARN_THRESHOLD, un proxy documentado, no un estándar publicado.
+MAX_SILENCE_DURATION_WARN_S = 2.0
+
 # Tolerancia relativa al comparar el aspect ratio real del asset contra los
 # aspect ratios soportados por el placement.
 ASPECT_RATIO_TOLERANCE = 0.02
@@ -317,6 +322,84 @@ def check_dominant_color(asset_knowledge: dict, profile: dict, brief: dict | Non
     return FindingStatus.FAIL, fail_message, evidence
 
 
+def check_logo_presence(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    required = ((brief or {}).get("brand") or {}).get("required_logo_present")
+    logo_detection = get_field(asset_knowledge, "visual.summary.logo_detection")
+    frames_with_logo = logo_detection.get("frames_with_logo", 0)
+    frames_analyzed = logo_detection.get("frames_analyzed", 0)
+    evidence = {
+        "frames_with_logo": frames_with_logo,
+        "frames_analyzed": frames_analyzed,
+        "reference_image": logo_detection.get("reference_image"),
+    }
+
+    if not required:
+        return (
+            FindingStatus.PASS,
+            "Presencia de logo no evaluada: el brief no marca brand.required_logo_present.",
+            evidence,
+        )
+    if frames_with_logo > 0:
+        return (
+            FindingStatus.PASS,
+            f"Logo detectado en {frames_with_logo}/{frames_analyzed} frames analizados.",
+            evidence,
+        )
+    return (
+        FindingStatus.FAIL,
+        f"Logo no detectado en ninguno de los {frames_analyzed} frames analizados.",
+        evidence,
+    )
+
+
+def check_logo_safe_zone(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    safe_zone_required = ((brief or {}).get("brand") or {}).get("logo_safe_zone_required")
+    logo_detection = get_field(asset_knowledge, "visual.summary.logo_detection")
+    margins = get_field(profile, "technical.safe_zone_margins_pct")
+    frames_with_logo = logo_detection.get("frames_with_logo", 0)
+    detections = logo_detection.get("detections", [])
+    evidence = {"margins_pct": margins, "frames_with_logo": frames_with_logo}
+
+    if not safe_zone_required:
+        return (
+            FindingStatus.PASS,
+            "Zona segura de logo no evaluada: el brief no marca brand.logo_safe_zone_required.",
+            evidence,
+        )
+    if frames_with_logo == 0:
+        return (
+            FindingStatus.PASS,
+            "Logo no detectado en ningún frame; no hay posición que evaluar.",
+            evidence,
+        )
+
+    violations = []
+    for d in detections:
+        if not d.get("detected"):
+            continue
+        bbox = d.get("bbox_pct") or {}
+        edges = [
+            ("left", margins.get("left"), bbox.get("x_min"), lambda v, m: v < m / 100),
+            ("right", margins.get("right"), bbox.get("x_max"), lambda v, m: v > 1 - m / 100),
+            ("top", margins.get("top"), bbox.get("y_min"), lambda v, m: v < m / 100),
+            ("bottom", margins.get("bottom"), bbox.get("y_max"), lambda v, m: v > 1 - m / 100),
+        ]
+        for edge, margin, value, violates in edges:
+            if margin is None:
+                continue  # borde sin dato publicado -> no se puede validar, se omite
+            if violates(value, margin):
+                violations.append({"frame": d.get("frame"), "time": d.get("time"), "edge": edge, "bbox_pct": bbox})
+
+    evidence["violations"] = violations
+    if violations:
+        return FindingStatus.FAIL, f"{len(violations)} detección(es) del logo invaden la zona segura.", evidence
+    return (
+        FindingStatus.PASS,
+        f"Las {frames_with_logo} detección(es) del logo respetan la zona segura configurada.",
+        evidence,
+    )
+
+
 def check_audio_present(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
     audio_present = get_field(asset_knowledge, "asset.metadata.audio_present")
     evidence = {"audio_present": audio_present}
@@ -360,6 +443,64 @@ def check_narration_present(asset_knowledge: dict, profile: dict, brief: dict | 
     return FindingStatus.PASS, f"{word_count} palabras transcritas.", evidence
 
 
+def check_silence_detection(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    silence_analysis = get_field(asset_knowledge, "audio.summary.silence_analysis")
+    max_silence = silence_analysis.get("max_silence_s", 0)
+    evidence = {
+        "max_silence_s": max_silence,
+        "threshold_s": MAX_SILENCE_DURATION_WARN_S,
+        "silent_segments": silence_analysis.get("silent_segments"),
+    }
+
+    if max_silence > MAX_SILENCE_DURATION_WARN_S:
+        return (
+            FindingStatus.FAIL,
+            f"Silencio de {max_silence}s excede el máximo aceptable de {MAX_SILENCE_DURATION_WARN_S}s.",
+            evidence,
+        )
+    return (
+        FindingStatus.PASS,
+        f"Silencio máximo {max_silence}s dentro de lo aceptable.",
+        evidence,
+    )
+
+
+def check_volume_loudness(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    loudness_analysis = get_field(asset_knowledge, "audio.summary.loudness_analysis")
+    measured = loudness_analysis.get("integrated_lufs")
+    targets = get_field(profile, "technical.loudness_targets_lufs")
+    evidence = {"measured_lufs": measured, "targets": targets}
+
+    if measured is None:
+        return (
+            FindingStatus.FAIL,
+            "No se pudo medir el loudness del audio (clip muy corto o silencioso).",
+            evidence,
+        )
+
+    scored = [{**t, "distance": round(abs(measured - t["target_lufs"]), 2)} for t in targets]
+    matches = [t for t in scored if t["distance"] <= t["tolerance_lu"]]
+    evidence["scored_targets"] = scored
+
+    if matches:
+        best = min(matches, key=lambda t: t["distance"])
+        evidence["closest_match"] = best
+        pass_message = (
+            f"Loudness medido {measured} LUFS dentro de tolerancia del target {best['region']} "
+            f"({best['target_lufs']}±{best['tolerance_lu']} LUFS, distancia {best['distance']})."
+        )
+        return FindingStatus.PASS, pass_message, evidence
+
+    closest_miss = min(scored, key=lambda t: t["distance"])
+    evidence["closest_match"] = closest_miss
+    fail_message = (
+        f"Loudness medido {measured} LUFS fuera de tolerancia de todos los targets publicados "
+        f"(más cercano: {closest_miss['region']} {closest_miss['target_lufs']}±{closest_miss['tolerance_lu']} LUFS, "
+        f"distancia {closest_miss['distance']})."
+    )
+    return FindingStatus.FAIL, fail_message, evidence
+
+
 def not_evaluated(reason: str) -> CheckResult:
     """Factory compartido por todas las reglas con implementable: false."""
     return FindingStatus.NOT_EVALUATED, f"No evaluado: {reason}", None
@@ -378,8 +519,12 @@ CHECK_REGISTRY: dict[str, CheckFn] = {
     "check_text_density": check_text_density,
     "check_cta_detection": check_cta_detection,
     "check_dominant_color": check_dominant_color,
+    "check_logo_presence": check_logo_presence,
+    "check_logo_safe_zone": check_logo_safe_zone,
     "check_audio_present": check_audio_present,
     "check_speech_detected": check_speech_detected,
     "check_language": check_language,
     "check_narration_present": check_narration_present,
+    "check_silence_detection": check_silence_detection,
+    "check_volume_loudness": check_volume_loudness,
 }

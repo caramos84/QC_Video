@@ -24,6 +24,7 @@ technical:
   bitrate_kbps: null
   captions_required: false
   safe_zone_notes: null
+  safe_zone_margins_pct: null
   audio: null
 source_url: https://support.google.com/google-ads/answer/16041697
 notes: solo primeros 60s se reproducen en feed; overlay aparece a los 50s

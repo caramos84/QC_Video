@@ -7,7 +7,7 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
 
 def test_run_qc_all_pass_still_review_due_to_coverage(asset_pass, test_profile, catalog, scoring_config):
-    # Con solo 16/26 reglas implementables, un asset perfecto NUNCA debe salir
+    # Con solo 20/26 reglas implementables, un asset perfecto NUNCA debe salir
     # PASS todavía -- es la decisión de negocio confirmada con el usuario.
     report = run_qc(asset_pass, test_profile, brief=None, catalog=catalog, scoring_config=scoring_config)
     implementable_findings = [f for f in report.findings if f.status != FindingStatus.NOT_EVALUATED]
@@ -38,14 +38,25 @@ def test_run_qc_missing_visual_audio_sections_degrades_gracefully(
     # Todo lo que depende de visual.summary / audio.summary -> NOT_EVALUATED, no crash.
     assert by_id["VISUAL_TEXT_PRESENCE"].status == FindingStatus.NOT_EVALUATED
     assert by_id["SONORA_SPEECH_DETECTED"].status == FindingStatus.NOT_EVALUATED
+    assert by_id["SONORA_SILENCE_DETECTION"].status == FindingStatus.NOT_EVALUATED
+    assert by_id["SONORA_VOLUME_LOUDNESS"].status == FindingStatus.NOT_EVALUATED
 
 
 def test_brief_severity_override_applies_even_when_not_evaluated(asset_pass, test_profile, test_brief, catalog, scoring_config):
     report = run_qc(asset_pass, test_profile, brief=test_brief, catalog=catalog, scoring_config=scoring_config)
-    logo_finding = next(f for f in report.findings if f.rule_id == "VISUAL_LOGO_PRESENCE")
-    assert logo_finding.status == FindingStatus.NOT_EVALUATED  # sigue sin CV pipeline (logo/producto quedaron fuera de este paso)
-    assert logo_finding.severity == Severity.CRITICO  # pero la severidad ya refleja el override del brief
+    product_finding = next(f for f in report.findings if f.rule_id == "VISUAL_PRODUCT_DETECTION")
+    assert product_finding.status == FindingStatus.NOT_EVALUATED  # sin CV pipeline (queda fuera de este paso)
+    assert product_finding.severity == Severity.CRITICO  # pero la severidad ya refleja el override del brief
     assert report.brief_id == "test_brief"
+
+
+def test_logo_presence_and_safe_zone_evaluated_and_pass_with_brief(asset_pass, test_profile, test_brief, catalog, scoring_config):
+    report = run_qc(asset_pass, test_profile, brief=test_brief, catalog=catalog, scoring_config=scoring_config)
+    presence = next(f for f in report.findings if f.rule_id == "VISUAL_LOGO_PRESENCE")
+    safe_zone = next(f for f in report.findings if f.rule_id == "VISUAL_LOGO_SAFE_ZONE")
+    assert presence.status == FindingStatus.PASS
+    assert presence.severity == Severity.CRITICO  # el override del brief sigue aplicando una vez evaluado
+    assert safe_zone.status == FindingStatus.PASS
 
 
 def test_cta_detection_evaluated_and_passes_with_brief(asset_pass, test_profile, test_brief, catalog, scoring_config):
@@ -59,6 +70,14 @@ def test_dominant_color_evaluated_and_passes_with_brief(asset_pass, test_profile
     report = run_qc(asset_pass, test_profile, brief=test_brief, catalog=catalog, scoring_config=scoring_config)
     color_finding = next(f for f in report.findings if f.rule_id == "VISUAL_DOMINANT_COLOR")
     assert color_finding.status == FindingStatus.PASS
+
+
+def test_silence_and_loudness_evaluated_and_pass(asset_pass, test_profile, catalog, scoring_config):
+    report = run_qc(asset_pass, test_profile, brief=None, catalog=catalog, scoring_config=scoring_config)
+    silence = next(f for f in report.findings if f.rule_id == "SONORA_SILENCE_DETECTION")
+    loudness = next(f for f in report.findings if f.rule_id == "SONORA_VOLUME_LOUDNESS")
+    assert silence.status == FindingStatus.PASS
+    assert loudness.status == FindingStatus.PASS
 
 
 def test_run_qc_from_paths_matches_run_qc(asset_missing_data, test_profile):

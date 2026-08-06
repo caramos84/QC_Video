@@ -30,5 +30,6 @@ technical:
   bitrate_kbps: null
   captions_required: false
   safe_zone_notes: null
+  safe_zone_margins_pct: null
   audio: AAC o MPEG4, sample rate <64kHz
 source_url: https://business.linkedin.com/advertise/ads/sponsored-content/video-ads/specs

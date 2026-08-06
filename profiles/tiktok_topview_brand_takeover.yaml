@@ -26,6 +26,7 @@ technical:
   captions_required: recomendado, max 100 caracteres / 4 líneas (50 car. CN/JP/KR)
   safe_zone_notes: initial-stage (primeros 3s, zoom-in takeover) vs feed-stage; evitar blanco puro en
     primeros 3s
+  safe_zone_margins_pct: null
   audio: obligatorio, evitar sonidos abruptos en primeros 3s
 source_url: https://ads.tiktok.com/help/article/tiktok-reservation-topview
 notes: recomendado 9-15s

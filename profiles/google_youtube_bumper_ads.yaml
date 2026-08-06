@@ -30,5 +30,6 @@ technical:
   bitrate_kbps: null
   captions_required: false
   safe_zone_notes: null
+  safe_zone_margins_pct: null
   audio: null
 source_url: https://support.google.com/google-ads/answer/6055025

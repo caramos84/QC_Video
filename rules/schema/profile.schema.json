@@ -42,7 +42,30 @@
         "bitrate_kbps": {},
         "captions_required": {},
         "safe_zone_notes": { "type": ["string", "null"] },
-        "audio": { "type": ["string", "null"] }
+        "safe_zone_margins_pct": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "properties": {
+            "top": { "type": ["number", "null"] },
+            "bottom": { "type": ["number", "null"] },
+            "left": { "type": ["number", "null"] },
+            "right": { "type": ["number", "null"] }
+          }
+        },
+        "audio": { "type": ["string", "null"] },
+        "loudness_targets_lufs": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["region", "target_lufs", "tolerance_lu"],
+            "properties": {
+              "region": { "type": "string" },
+              "target_lufs": { "type": "number" },
+              "tolerance_lu": { "type": "number" }
+            }
+          }
+        }
       }
     }
   }

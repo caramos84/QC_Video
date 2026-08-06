@@ -22,6 +22,7 @@ technical:
   bitrate_kbps: null
   captions_required: false
   safe_zone_notes: null
+  safe_zone_margins_pct: null
   audio: volumen codificado <= -12dB
 source_url: https://support.google.com/displayvideo/answer/6006843
 notes: animación de apertura <=30s; carga inicial <=40KB

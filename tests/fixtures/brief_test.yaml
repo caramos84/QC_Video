@@ -12,4 +12,5 @@ expected_language: es
 severity_overrides:
   VISUAL_CTA_DETECTION: error_de_marca
   VISUAL_LOGO_PRESENCE: critico
+  VISUAL_PRODUCT_DETECTION: critico
 notes: "Fixture de brief usado por tests/."
