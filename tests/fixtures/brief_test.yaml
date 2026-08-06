@@ -4,7 +4,12 @@ campaign_name: "Test Campaign"
 cta:
   required: true
   accepted_texts: ["Compra ahora"]
+brand:
+  required_logo_present: true
+  brand_colors_hex: ["#E2001A"]
+  logo_safe_zone_required: true
 expected_language: es
 severity_overrides:
   VISUAL_CTA_DETECTION: error_de_marca
+  VISUAL_LOGO_PRESENCE: critico
 notes: "Fixture de brief usado por tests/."

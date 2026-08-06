@@ -48,11 +48,11 @@ def test_missing_fields_reports_only_absent_paths():
 
 def test_load_catalog_returns_all_rules():
     rules = load_catalog()
-    assert len(rules) == 25
+    assert len(rules) == 26
     implementable = [r for r in rules if r.implementable]
     stubs = [r for r in rules if not r.implementable]
-    assert len(implementable) == 11
-    assert len(stubs) == 14
+    assert len(implementable) == 16
+    assert len(stubs) == 10
 
 
 def test_load_catalog_implementable_rules_have_check_fn():

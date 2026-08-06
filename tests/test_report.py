@@ -19,7 +19,7 @@ def test_qc_report_json_matches_report_dict(tmp_path, asset_pass, test_profile, 
 
     doc = json.loads(paths["qc_report"].read_text(encoding="utf-8"))
     assert doc["asset_id"] == report.asset_id
-    assert len(doc["findings"]) == 25
+    assert len(doc["findings"]) == 26
 
 
 def test_qc_score_json_has_expected_shape(tmp_path, asset_pass, test_profile, catalog, scoring_config):
