@@ -7,7 +7,7 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
 
 def test_run_qc_all_pass_still_review_due_to_coverage(asset_pass, test_profile, catalog, scoring_config):
-    # Con solo 11/25 reglas implementables, un asset perfecto NUNCA debe salir
+    # Con solo 16/26 reglas implementables, un asset perfecto NUNCA debe salir
     # PASS todavía -- es la decisión de negocio confirmada con el usuario.
     report = run_qc(asset_pass, test_profile, brief=None, catalog=catalog, scoring_config=scoring_config)
     implementable_findings = [f for f in report.findings if f.status != FindingStatus.NOT_EVALUATED]
@@ -42,10 +42,23 @@ def test_run_qc_missing_visual_audio_sections_degrades_gracefully(
 
 def test_brief_severity_override_applies_even_when_not_evaluated(asset_pass, test_profile, test_brief, catalog, scoring_config):
     report = run_qc(asset_pass, test_profile, brief=test_brief, catalog=catalog, scoring_config=scoring_config)
-    cta_finding = next(f for f in report.findings if f.rule_id == "VISUAL_CTA_DETECTION")
-    assert cta_finding.status == FindingStatus.NOT_EVALUATED  # sigue sin CV pipeline
-    assert cta_finding.severity == Severity.ERROR_DE_MARCA  # pero la severidad ya refleja el brief
+    logo_finding = next(f for f in report.findings if f.rule_id == "VISUAL_LOGO_PRESENCE")
+    assert logo_finding.status == FindingStatus.NOT_EVALUATED  # sigue sin CV pipeline (logo/producto quedaron fuera de este paso)
+    assert logo_finding.severity == Severity.CRITICO  # pero la severidad ya refleja el override del brief
     assert report.brief_id == "test_brief"
+
+
+def test_cta_detection_evaluated_and_passes_with_brief(asset_pass, test_profile, test_brief, catalog, scoring_config):
+    report = run_qc(asset_pass, test_profile, brief=test_brief, catalog=catalog, scoring_config=scoring_config)
+    cta_finding = next(f for f in report.findings if f.rule_id == "VISUAL_CTA_DETECTION")
+    assert cta_finding.status == FindingStatus.PASS
+    assert cta_finding.severity == Severity.ERROR_DE_MARCA  # el override del brief sigue aplicando una vez evaluado
+
+
+def test_dominant_color_evaluated_and_passes_with_brief(asset_pass, test_profile, test_brief, catalog, scoring_config):
+    report = run_qc(asset_pass, test_profile, brief=test_brief, catalog=catalog, scoring_config=scoring_config)
+    color_finding = next(f for f in report.findings if f.rule_id == "VISUAL_DOMINANT_COLOR")
+    assert color_finding.status == FindingStatus.PASS
 
 
 def test_run_qc_from_paths_matches_run_qc(asset_missing_data, test_profile):
@@ -55,4 +68,4 @@ def test_run_qc_from_paths_matches_run_qc(asset_missing_data, test_profile):
     )
     assert report_from_paths.profile_id == "test_profile"
     assert report_from_paths.asset_id == "fixture_missing_data.mp4"
-    assert len(report_from_paths.findings) == 25
+    assert len(report_from_paths.findings) == 26

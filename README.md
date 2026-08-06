@@ -89,13 +89,14 @@ frames/
 
 ### Notebook 02 — Visual Analyzer
 
-Processes extracted frames with OCR (EasyOCR, es/en). **Does not yet do general Computer Vision** — no logo/CTA/product detection, no color analysis, no layout/composition analysis. Those are tracked as `NOT_EVALUATED` rules in the rules engine until a real CV pipeline exists.
+Processes extracted frames with OCR (EasyOCR, es/en) and extracts dominant colors via `cv2.kmeans` over sampled frame pixels. **Does not yet do logo/product/composition detection** — those are tracked as `NOT_EVALUATED` rules in the rules engine until a reference-image matching mechanism or a heavier CV pipeline exists. (CTA detection doesn't need its own CV step — the rules engine matches a campaign brief's expected CTA text against the OCR output already produced here.)
 
 Capabilities:
 
 - OCR text extraction
 - Word counting
 - Bounding boxes per detected text
+- Dominant color extraction (k-means, top 5 by prevalence)
 
 Outputs:
 
@@ -144,7 +145,7 @@ qc_summary.md
 
 `rules/` is a standalone, testable Python package (`pytest`, 45 tests, 81% coverage) — see [`context/matriz_medios.md`](context/matriz_medios.md) for how the technical specs were sourced.
 
-- **`rules/catalog.yaml`** — 25 rules across 4 layers (técnica / visual / sonora / semántica). 11 are implemented against what Notebooks 01–03 actually produce today; 14 are registered as `NOT_EVALUATED` stubs with an explicit reason (no CV pipeline, no audio-quality pipeline, no semantic/LLM layer) — missing data is never silently treated as a pass.
+- **`rules/catalog.yaml`** — 26 rules across 4 layers (técnica / visual / sonora / semántica). 16 are implemented against what Notebooks 01–03 actually produce today: codec, frame rate and file size (via `ffprobe`/`os.path.getsize` in Notebook 01); CTA detection (reuses the OCR text Notebook 02 already extracts — no new CV needed) and dominant-color matching (`cv2.kmeans` over sampled frame pixels, added to Notebook 02). 10 remain `NOT_EVALUATED` stubs with an explicit reason (no CV pipeline for logo/product/composition, no audio-quality pipeline, no semantic/LLM layer) — missing data is never silently treated as a pass. **`rules/` itself still has zero image/ML dependencies** — all pixel-level computation happens upstream in the notebooks; the package only ever compares already-computed JSON fields (colors as hex strings, OCR text as strings), which is what keeps it fast/testable/CI-friendly.
 - **`profiles/`** — 25 channel/placement profiles (Meta, TikTok, Google/YouTube/DV360, LinkedIn, Pinterest, CTV), auto-generated from [`context/matriz_medios.json`](context/matriz_medios.json) via `python -m rules.tools.build_profiles_from_matriz`. Never hand-edit a profile — edit the matrix and regenerate.
 - **`samples/briefs/`** — per-campaign business rules (CTA text, legal disclaimers, brand colors/logo) that can override a rule's severity for that campaign.
 - **Scoring**: severities `critico` (forces FAIL) / `error_de_marca` (-20) / `error_tecnico` (-15) / `warning` (-5). Verdict is `PASS` / `REVIEW` / `FAIL`, and **caps at `REVIEW` when rule coverage is low** — a perfect score can't be presented as "fully validated" while whole layers (visual/audio/semantic) are unevaluated.
@@ -177,10 +178,8 @@ This architecture provides:
 
 # Planned Features (not yet implemented — tracked as `NOT_EVALUATED` catalog rules)
 
-- Codec + frame-rate capture in Notebook 01 (`TECH_CODEC`, needed since Highcut's own spec names these as core)
-- Logo Detection / Safe Zone Validation (`VISUAL_LOGO_PRESENCE`, `VISUAL_LOGO_SAFE_ZONE`)
-- CTA Detection (`VISUAL_CTA_DETECTION`)
-- Dominant color / product / composition analysis (`VISUAL_DOMINANT_COLOR`, `VISUAL_PRODUCT_DETECTION`, `VISUAL_COMPOSITION`)
+- Logo Detection / Safe Zone Validation (`VISUAL_LOGO_PRESENCE`, `VISUAL_LOGO_SAFE_ZONE`) — needs a reference logo image mechanism (classical CV, offline)
+- Product detection / composition analysis (`VISUAL_PRODUCT_DETECTION`, `VISUAL_COMPOSITION`)
 - Silence / loudness / music-vs-voice audio-quality analysis (`SONORA_SILENCE_DETECTION`, `SONORA_VOLUME_LOUDNESS`, `SONORA_MUSIC_VS_VOICE`)
 - Semantic/brief compliance via LLM (`SEMANTICA_*`) — message, brand positioning, guideline compliance
 - Dashboard (SPHERE UI — design system + components already available, see below)
@@ -251,8 +250,9 @@ QC_Video/
 - [x] Audio Analyzer (transcription only)
 - [x] QC Decision Engine (rules engine v1 — 11/25 rules implemented, rest are explicit `NOT_EVALUATED`)
 - [x] Rule Profiles (25, generated from the media specs matrix)
-- [ ] Codec/frame-rate technical checks (Highcut's own core scope — next priority)
-- [ ] Brand Validation (logo/CTA/color — needs a real CV pipeline)
+- [x] Codec/frame-rate/file-size technical checks (`TECH_CODEC`, `TECH_FRAME_RATE`, `TECH_FILE_SIZE`)
+- [x] CTA detection via existing OCR text + dominant-color brand matching via k-means (`VISUAL_CTA_DETECTION`, `VISUAL_DOMINANT_COLOR` — 16/26 catalog rules now implemented)
+- [ ] Logo detection / safe zone / product / composition (`VISUAL_LOGO_*`, `VISUAL_PRODUCT_DETECTION`, `VISUAL_COMPOSITION` — deferred, needs reference-image matching or a heavier CV pipeline)
 - [ ] Audio-quality checks (silence/loudness/music — needs a real audio-quality pipeline)
 - [ ] Semantic/brief compliance (needs an LLM layer)
 - [ ] Dashboard (SPHERE UI)

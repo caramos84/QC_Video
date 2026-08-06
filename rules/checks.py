@@ -8,6 +8,7 @@ Firma común: check_fn(asset_knowledge: dict, profile: dict, brief: dict | None)
 """
 from __future__ import annotations
 
+import math
 from collections.abc import Callable
 from typing import Any
 
@@ -22,9 +23,43 @@ CheckFn = Callable[[dict, dict, dict | None], CheckResult]
 # No es un análisis real de legibilidad/composición.
 TEXT_DENSITY_WARN_THRESHOLD = 40
 
+# Umbral heurístico (distancia Euclidiana RGB, sobre un máximo teórico de
+# sqrt(255^2*3) ~= 441.7) para considerar que un color dominante extraído
+# coincide con un color de marca del brief. JPEG + extracción a 1fps +
+# promediado por centroides de k-means hacen que la reproducción exacta del
+# hex de marca sea poco realista; 60 tolera drift de iluminación/compresión
+# moderado sin dejar pasar colores de familia de tono claramente distinta.
+DOMINANT_COLOR_DISTANCE_THRESHOLD = 60
+
 # Tolerancia relativa al comparar el aspect ratio real del asset contra los
 # aspect ratios soportados por el placement.
 ASPECT_RATIO_TOLERANCE = 0.02
+
+# Tolerancia absoluta (fps) al comparar contra una lista de frame rates
+# discretos permitidos -- cubre drift típico de NTSC (29.97 vs 30, etc.).
+FRAME_RATE_TOLERANCE = 0.1
+
+# ffprobe devuelve nombres técnicos de códec (codec_name) distintos a los
+# nombres "de marketing" usados en context/matriz_medios.json / profiles/.
+# Mapeo best-effort; códecs no listados se comparan por igualdad de string
+# case-insensitive tal cual.
+CODEC_ALIASES: dict[str, str] = {
+    "h264": "H.264",
+    "avc": "H.264",
+    "avc1": "H.264",
+    "hevc": "H.265",
+    "h265": "H.265",
+    "vp9": "VP9",
+    "vp8": "VP8",
+    "av1": "AV1",
+    "mpeg4": "MPEG-4",
+    "mpeg2video": "MPEG-2",
+    "prores": "ProRes",
+}
+
+
+def normalize_codec(codec: str) -> str:
+    return CODEC_ALIASES.get(codec.strip().lower(), codec.strip())
 
 
 def _parse_ratio(ratio_str: str) -> float | None:
@@ -118,6 +153,56 @@ def check_orientation(asset_knowledge: dict, profile: dict, brief: dict | None) 
     return FindingStatus.PASS, f"orientation='{orientation}' es consistente con width/height.", evidence
 
 
+def check_frame_rate(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    fps = get_field(asset_knowledge, "asset.metadata.fps")
+    allowed = get_field(profile, "technical.frame_rate")
+    evidence = {"fps": fps, "frame_rate_permitido": allowed}
+
+    if isinstance(allowed, list):
+        match = any(abs(fps - v) <= FRAME_RATE_TOLERANCE for v in allowed)
+        if not match:
+            return (
+                FindingStatus.FAIL,
+                f"fps={fps} no coincide con ninguno de los valores permitidos {allowed}.",
+                evidence,
+            )
+        return FindingStatus.PASS, f"fps={fps} coincide con un valor permitido de {allowed}.", evidence
+
+    # Un único número en el profile se interpreta como mínimo (ej. GDN
+    # in-banner: "mín 14fps"), no como valor exacto.
+    if fps < allowed:
+        return FindingStatus.FAIL, f"fps={fps} por debajo del mínimo requerido ({allowed}fps).", evidence
+    return FindingStatus.PASS, f"fps={fps} cumple el mínimo requerido ({allowed}fps).", evidence
+
+
+def check_file_size(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    size_bytes = get_field(asset_knowledge, "asset.metadata.file_size_bytes")
+    max_mb = get_field(profile, "technical.max_file_size_mb")
+    size_mb = size_bytes / (1024 * 1024)
+    evidence = {"file_size_mb": round(size_mb, 2), "max_file_size_mb": max_mb}
+
+    if size_mb > max_mb:
+        return FindingStatus.FAIL, f"Peso {size_mb:.2f}MB excede el máximo {max_mb}MB del placement.", evidence
+    return FindingStatus.PASS, f"Peso {size_mb:.2f}MB cumple el máximo {max_mb}MB.", evidence
+
+
+def check_codec(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    codec = get_field(asset_knowledge, "asset.metadata.codec")
+    allowed = get_field(profile, "technical.codecs") or []
+    allowed_optional = get_field(profile, "technical.codecs_optional") or []
+    normalized = normalize_codec(codec)
+    accepted = {c.upper() for c in [*allowed, *allowed_optional]}
+    evidence = {"codec": codec, "codec_normalizado": normalized, "codecs_permitidos": allowed, "codecs_opcionales": allowed_optional}
+
+    if normalized.upper() not in accepted:
+        return (
+            FindingStatus.FAIL,
+            f"Códec '{codec}' (normalizado: '{normalized}') no está entre los permitidos {allowed + allowed_optional}.",
+            evidence,
+        )
+    return FindingStatus.PASS, f"Códec '{codec}' (normalizado: '{normalized}') es válido para el placement.", evidence
+
+
 def check_text_presence(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
     frames_with_text = get_field(asset_knowledge, "visual.summary.frames_with_text")
     frames_processed = get_field(asset_knowledge, "visual.summary.frames_processed")
@@ -139,6 +224,97 @@ def check_text_density(asset_knowledge: dict, profile: dict, brief: dict | None)
         )
         return FindingStatus.FAIL, message, evidence
     return FindingStatus.PASS, f"Máximo {max_words} palabras en un frame, dentro del proxy aceptable.", evidence
+
+
+def _hex_to_rgb(hex_str: str) -> tuple[int, int, int]:
+    h = hex_str.lstrip("#")
+    return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+
+
+def _rgb_distance(hex_a: str, hex_b: str) -> float:
+    r1, g1, b1 = _hex_to_rgb(hex_a)
+    r2, g2, b2 = _hex_to_rgb(hex_b)
+    return math.sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2)
+
+
+def check_cta_detection(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    accepted_texts = ((brief or {}).get("cta") or {}).get("accepted_texts") or []
+    frames = get_field(asset_knowledge, "visual.frames") or []
+    evidence = {"frames_scanned": len(frames), "accepted_texts": accepted_texts}
+
+    if not accepted_texts:
+        return (
+            FindingStatus.PASS,
+            "CTA no evaluado: el brief no especifica cta.accepted_texts.",
+            evidence,
+        )
+
+    matches = []
+    for frame in frames:
+        for text in frame.get("text") or []:
+            for accepted in accepted_texts:
+                if accepted.lower() in text.lower():
+                    matches.append(
+                        {
+                            "frame": frame.get("frame"),
+                            "time": frame.get("time"),
+                            "ocr_text": text,
+                            "matched_cta": accepted,
+                        }
+                    )
+    evidence["matches"] = matches
+
+    if matches:
+        m = matches[0]
+        return (
+            FindingStatus.PASS,
+            f"CTA '{m['matched_cta']}' detectado en frame {m['frame']} (t={m['time']}s) vía OCR.",
+            evidence,
+        )
+    return (
+        FindingStatus.FAIL,
+        f"Ningún frame contiene alguno de los CTA esperados {accepted_texts} (OCR de {len(frames)} frames).",
+        evidence,
+    )
+
+
+def check_dominant_color(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    brand_colors = ((brief or {}).get("brand") or {}).get("brand_colors_hex") or []
+    dominant_colors = get_field(asset_knowledge, "visual.summary.dominant_colors") or []
+    evidence = {
+        "dominant_colors": dominant_colors,
+        "brand_colors_hex": brand_colors,
+        "threshold": DOMINANT_COLOR_DISTANCE_THRESHOLD,
+    }
+
+    if not brand_colors:
+        return (
+            FindingStatus.PASS,
+            "Color dominante no evaluado: el brief no especifica brand.brand_colors_hex.",
+            evidence,
+        )
+    if not dominant_colors:
+        return FindingStatus.FAIL, "No hay colores dominantes extraídos para comparar.", evidence
+
+    best_distance, best_dom, best_brand = min(
+        ((_rgb_distance(d, b), d, b) for d in dominant_colors for b in brand_colors),
+        key=lambda t: t[0],
+    )
+    evidence["closest_match"] = {"dominant": best_dom, "brand": best_brand, "distance": round(best_distance, 1)}
+
+    if best_distance <= DOMINANT_COLOR_DISTANCE_THRESHOLD:
+        pass_message = (
+            f"Color dominante {best_dom} cerca del color de marca {best_brand} "
+            f"(distancia {best_distance:.1f} <= {DOMINANT_COLOR_DISTANCE_THRESHOLD})."
+        )
+        return FindingStatus.PASS, pass_message, evidence
+
+    fail_message = (
+        f"Ningún color dominante está cerca de la paleta de marca "
+        f"(distancia mínima {best_distance:.1f} > {DOMINANT_COLOR_DISTANCE_THRESHOLD}, "
+        f"entre {best_dom} y {best_brand})."
+    )
+    return FindingStatus.FAIL, fail_message, evidence
 
 
 def check_audio_present(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
@@ -195,8 +371,13 @@ CHECK_REGISTRY: dict[str, CheckFn] = {
     "check_duration_min": check_duration_min,
     "check_duration_max": check_duration_max,
     "check_orientation": check_orientation,
+    "check_frame_rate": check_frame_rate,
+    "check_file_size": check_file_size,
+    "check_codec": check_codec,
     "check_text_presence": check_text_presence,
     "check_text_density": check_text_density,
+    "check_cta_detection": check_cta_detection,
+    "check_dominant_color": check_dominant_color,
     "check_audio_present": check_audio_present,
     "check_speech_detected": check_speech_detected,
     "check_language": check_language,

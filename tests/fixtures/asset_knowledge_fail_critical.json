@@ -7,7 +7,9 @@
       "width": 1920,
       "height": 1080,
       "orientation": "horizontal",
-      "audio_present": true
+      "audio_present": true,
+      "file_size_bytes": 52428800,
+      "codec": "h264"
     },
     "manifest": {
       "asset_id": "fixture_fail_critical",

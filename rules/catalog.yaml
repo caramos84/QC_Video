@@ -65,23 +65,36 @@ rules:
     requires_profile_fields: []
     check_fn: check_orientation
 
+  - rule_id: TECH_FRAME_RATE
+    layer: tecnica
+    default_severity: error_tecnico
+    implementable: true
+    description: >-
+      El frame rate (fps) del asset cumple el requisito del placement.
+      technical.frame_rate en el profile puede ser una lista de valores discretos
+      permitidos (ej. DV360) o un único número que actúa como mínimo (ej. GDN
+      in-banner "mín 14fps") -- ver check_frame_rate para el manejo de ambos casos.
+    requires_fields: ["asset.metadata.fps"]
+    requires_profile_fields: ["technical.frame_rate"]
+    check_fn: check_frame_rate
+
   - rule_id: TECH_FILE_SIZE
     layer: tecnica
     default_severity: error_tecnico
-    implementable: false
+    implementable: true
     description: "El peso del archivo no excede el máximo del placement."
     requires_fields: ["asset.metadata.file_size_bytes"]
     requires_profile_fields: ["technical.max_file_size_mb"]
-    not_evaluated_reason: "missing_field:asset.metadata.file_size_bytes (Notebook 01 no lo captura todavía)"
+    check_fn: check_file_size
 
   - rule_id: TECH_CODEC
     layer: tecnica
     default_severity: error_tecnico
-    implementable: false
-    description: "El códec de video está entre los soportados por el placement."
+    implementable: true
+    description: "El códec de video está entre los soportados (u opcionales) del placement."
     requires_fields: ["asset.metadata.codec"]
     requires_profile_fields: ["technical.codecs"]
-    not_evaluated_reason: "missing_field:asset.metadata.codec (Notebook 01 no lo captura todavía)"
+    check_fn: check_codec
 
   # ---- Capa visual ----
   - rule_id: VISUAL_TEXT_PRESENCE
@@ -123,11 +136,14 @@ rules:
   - rule_id: VISUAL_CTA_DETECTION
     layer: visual
     default_severity: warning
-    implementable: false
-    description: "El CTA requerido por el brief aparece visualmente en el video."
-    requires_fields: ["visual.cta_detection"]
+    implementable: true
+    description: >-
+      El CTA esperado (brief.cta.accepted_texts) aparece en el texto OCR de
+      algún frame (visual.frames[].text). Si el brief no especifica
+      accepted_texts, PASS informativo -- mismo patrón que SONORA_LANGUAGE.
+    requires_fields: ["visual.frames"]
     requires_profile_fields: []
-    not_evaluated_reason: "no_cv_pipeline (OCR de texto no es lo mismo que detección de CTA)"
+    check_fn: check_cta_detection
 
   - rule_id: VISUAL_PRODUCT_DETECTION
     layer: visual
@@ -141,11 +157,15 @@ rules:
   - rule_id: VISUAL_DOMINANT_COLOR
     layer: visual
     default_severity: warning
-    implementable: false
-    description: "Los colores predominantes son consistentes con la paleta de marca del brief."
-    requires_fields: ["visual.color_analysis"]
+    implementable: true
+    description: >-
+      Los colores dominantes extraídos por k-means (Notebook 02) están dentro
+      de una distancia RGB heurística de algún color de marca del brief
+      (brief.brand.brand_colors_hex). Si el brief no lo especifica, PASS
+      informativo -- mismo patrón que SONORA_LANGUAGE / VISUAL_CTA_DETECTION.
+    requires_fields: ["visual.summary.dominant_colors"]
     requires_profile_fields: []
-    not_evaluated_reason: "no_cv_pipeline"
+    check_fn: check_dominant_color
 
   - rule_id: VISUAL_COMPOSITION
     layer: visual

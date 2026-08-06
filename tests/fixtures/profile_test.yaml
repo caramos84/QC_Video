@@ -12,7 +12,7 @@ technical:
   max_file_size_mb: 100
   codecs: ["H.264"]
   containers: ["MP4"]
-  frame_rate: null
+  frame_rate: [24, 25, 30]
   bitrate_kbps: null
   captions_required: false
   safe_zone_notes: null

@@ -7,7 +7,9 @@
       "width": 1080,
       "height": 1920,
       "orientation": "vertical",
-      "audio_present": true
+      "audio_present": true,
+      "file_size_bytes": 52428800,
+      "codec": "h264"
     },
     "manifest": {
       "asset_id": "fixture_pass",
@@ -24,9 +26,27 @@
       "frames_without_text": 1,
       "total_words": 15,
       "avg_words": 5.0,
-      "max_words_in_frame": 10
+      "max_words_in_frame": 10,
+      "dominant_colors": ["#E2001A", "#FFFFFF", "#1A1A1A", "#8A8A8A", "#3D6EF2"]
     },
-    "frames": []
+    "frames": [
+      {
+        "frame": "frame_0000.jpg",
+        "time": 0,
+        "text_detected": true,
+        "word_count": 3,
+        "text": ["Compra ahora", "Envio gratis"],
+        "bounding_boxes": []
+      },
+      {
+        "frame": "frame_0001.jpg",
+        "time": 1,
+        "text_detected": false,
+        "word_count": 0,
+        "text": [],
+        "bounding_boxes": []
+      }
+    ]
   },
   "audio": {
     "summary": {
