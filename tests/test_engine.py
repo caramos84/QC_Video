@@ -1,3 +1,4 @@
+import copy
 from pathlib import Path
 
 from rules.engine import run_qc, run_qc_from_paths
@@ -78,6 +79,47 @@ def test_silence_and_loudness_evaluated_and_pass(asset_pass, test_profile, catal
     loudness = next(f for f in report.findings if f.rule_id == "SONORA_VOLUME_LOUDNESS")
     assert silence.status == FindingStatus.PASS
     assert loudness.status == FindingStatus.PASS
+
+
+def test_semantic_rules_not_evaluated_when_absent(asset_pass, test_profile, test_brief, catalog, scoring_config):
+    # asset_pass no trae "semantic" -- las 3 reglas SEMANTICA_* deben caer a
+    # NOT_EVALUATED via el gating existente de requires_fields, sin código nuevo.
+    report = run_qc(asset_pass, test_profile, brief=test_brief, catalog=catalog, scoring_config=scoring_config)
+    by_id = {f.rule_id: f for f in report.findings}
+    assert by_id["SEMANTICA_MESSAGE_COMPLIANCE"].status == FindingStatus.NOT_EVALUATED
+    assert by_id["SEMANTICA_BRAND_POSITIONING"].status == FindingStatus.NOT_EVALUATED
+    assert by_id["SEMANTICA_GUIDELINE_COMPLIANCE"].status == FindingStatus.NOT_EVALUATED
+
+
+def test_semantic_rules_pass_flips_verdict_to_pass(asset_pass, test_profile, test_brief, catalog, scoring_config):
+    # Con las 3 reglas semánticas evaluadas y compliant, la cobertura sube de
+    # 20/26 (76.9%) a 23/26 (88.5%) -- por encima del umbral de 80% -- y el
+    # veredicto pasa de REVIEW a PASS (decisión de negocio en scoring_config.yaml).
+    ak = copy.deepcopy(asset_pass)
+    ak["semantic"] = {
+        "message_compliance": {
+            "compliant": True,
+            "reasoning": "El OCR y la transcripción comunican los mensajes clave.",
+            "matched_messages": ["Envio gratis en compras desde $50.000"],
+            "missing_messages": [],
+        },
+        "brand_positioning": {
+            "compliant": True,
+            "reasoning": "El tono es cercano y consistente con el posicionamiento del brief.",
+        },
+        "guideline_compliance": {
+            "compliant": True,
+            "reasoning": "Cumple lineamientos generales de tono y disclaimer.",
+            "disclaimer_check": {"required": True, "found": True, "matched_text": "Aplican términos y condiciones"},
+        },
+    }
+    report = run_qc(ak, test_profile, brief=test_brief, catalog=catalog, scoring_config=scoring_config)
+    by_id = {f.rule_id: f for f in report.findings}
+    assert by_id["SEMANTICA_MESSAGE_COMPLIANCE"].status == FindingStatus.PASS
+    assert by_id["SEMANTICA_BRAND_POSITIONING"].status == FindingStatus.PASS
+    assert by_id["SEMANTICA_GUIDELINE_COMPLIANCE"].status == FindingStatus.PASS
+    assert report.score_summary.coverage_pct > 80
+    assert report.score_summary.verdict == Verdict.PASS
 
 
 def test_run_qc_from_paths_matches_run_qc(asset_missing_data, test_profile):

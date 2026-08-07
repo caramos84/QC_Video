@@ -4,6 +4,13 @@ campaign_name: "Test Campaign"
 cta:
   required: true
   accepted_texts: ["Compra ahora"]
+legal:
+  disclaimer_required: true
+  disclaimer_text_contains: ["Aplican términos y condiciones"]
+semantic:
+  key_messages: ["Envio gratis en compras desde $50.000"]
+  brand_positioning_statement: "Marca líder, cercana y confiable para las familias colombianas."
+  guidelines_text: "Tono cercano y positivo; no usar superlativos absolutos sin respaldo."
 brand:
   required_logo_present: true
   brand_colors_hex: ["#E2001A"]

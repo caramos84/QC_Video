@@ -36,6 +36,15 @@
         "logo_reference_image": { "type": "string" }
       }
     },
+    "semantic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key_messages": { "type": "array", "items": { "type": "string" } },
+        "brand_positioning_statement": { "type": "string" },
+        "guidelines_text": { "type": "string" }
+      }
+    },
     "expected_language": { "type": ["string", "null"] },
     "severity_overrides": {
       "type": "object",

@@ -501,6 +501,52 @@ def check_volume_loudness(asset_knowledge: dict, profile: dict, brief: dict | No
     return FindingStatus.FAIL, fail_message, evidence
 
 
+def check_semantic_message_compliance(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    result = get_field(asset_knowledge, "semantic.message_compliance")
+    if result.get("compliant"):
+        pass_message = (
+            f"Mensaje comunicado compatible con los key_messages del brief: {result.get('reasoning', '')}"
+        )
+        return FindingStatus.PASS, pass_message, result
+
+    missing = result.get("missing_messages") or []
+    fail_message = (
+        f"Mensaje comunicado no compatible con los key_messages del brief "
+        f"(faltantes: {missing}): {result.get('reasoning', '')}"
+    )
+    return FindingStatus.FAIL, fail_message, result
+
+
+def check_semantic_brand_positioning(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    result = get_field(asset_knowledge, "semantic.brand_positioning")
+    if result.get("compliant"):
+        return (
+            FindingStatus.PASS,
+            f"Posicionamiento de marca consistente con el brief: {result.get('reasoning', '')}",
+            result,
+        )
+    return (
+        FindingStatus.FAIL,
+        f"Posicionamiento de marca inconsistente con el brief: {result.get('reasoning', '')}",
+        result,
+    )
+
+
+def check_semantic_guideline_compliance(asset_knowledge: dict, profile: dict, brief: dict | None) -> CheckResult:
+    result = get_field(asset_knowledge, "semantic.guideline_compliance")
+    if result.get("compliant"):
+        return (
+            FindingStatus.PASS,
+            f"Cumple lineamientos de marca/legales del brief: {result.get('reasoning', '')}",
+            result,
+        )
+    return (
+        FindingStatus.FAIL,
+        f"No cumple lineamientos de marca/legales del brief: {result.get('reasoning', '')}",
+        result,
+    )
+
+
 def not_evaluated(reason: str) -> CheckResult:
     """Factory compartido por todas las reglas con implementable: false."""
     return FindingStatus.NOT_EVALUATED, f"No evaluado: {reason}", None
@@ -527,4 +573,7 @@ CHECK_REGISTRY: dict[str, CheckFn] = {
     "check_narration_present": check_narration_present,
     "check_silence_detection": check_silence_detection,
     "check_volume_loudness": check_volume_loudness,
+    "check_semantic_message_compliance": check_semantic_message_compliance,
+    "check_semantic_brand_positioning": check_semantic_brand_positioning,
+    "check_semantic_guideline_compliance": check_semantic_guideline_compliance,
 }

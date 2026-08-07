@@ -488,6 +488,59 @@ def test_check_volume_loudness_closer_target_determines_message():
     assert "US" in message
 
 
+def _ak_with_semantic(key, value):
+    return {"semantic": {key: value}}
+
+
+def test_check_semantic_message_compliance_pass():
+    ak = _ak_with_semantic("message_compliance", {"compliant": True, "reasoning": "cubre todo"})
+    status, message, _ = checks.check_semantic_message_compliance(ak, {}, None)
+    assert status == FindingStatus.PASS
+    assert "cubre todo" in message
+
+
+def test_check_semantic_message_compliance_fail_reports_missing():
+    ak = _ak_with_semantic(
+        "message_compliance",
+        {"compliant": False, "reasoning": "falta uno", "missing_messages": ["Envio gratis"]},
+    )
+    status, message, _ = checks.check_semantic_message_compliance(ak, {}, None)
+    assert status == FindingStatus.FAIL
+    assert "Envio gratis" in message
+
+
+def test_check_semantic_brand_positioning_pass():
+    ak = _ak_with_semantic("brand_positioning", {"compliant": True, "reasoning": "tono correcto"})
+    status, _, _ = checks.check_semantic_brand_positioning(ak, {}, None)
+    assert status == FindingStatus.PASS
+
+
+def test_check_semantic_brand_positioning_fail():
+    ak = _ak_with_semantic("brand_positioning", {"compliant": False, "reasoning": "tono distinto"})
+    status, _, _ = checks.check_semantic_brand_positioning(ak, {}, None)
+    assert status == FindingStatus.FAIL
+
+
+def test_check_semantic_guideline_compliance_pass():
+    ak = _ak_with_semantic("guideline_compliance", {"compliant": True, "reasoning": "cumple todo"})
+    status, _, _ = checks.check_semantic_guideline_compliance(ak, {}, None)
+    assert status == FindingStatus.PASS
+
+
+def test_check_semantic_guideline_compliance_fail():
+    ak = _ak_with_semantic(
+        "guideline_compliance",
+        {
+            "compliant": False,
+            "reasoning": "falta disclaimer",
+            "disclaimer_check": {"required": True, "found": False},
+        },
+    )
+    status, _, evidence = checks.check_semantic_guideline_compliance(ak, {}, None)
+    assert status == FindingStatus.FAIL
+    assert evidence["disclaimer_check"]["found"] is False
+
+
 def test_not_evaluated_factory():
     status, message, evidence = checks.not_evaluated("motivo de prueba")
     assert status == FindingStatus.NOT_EVALUATED

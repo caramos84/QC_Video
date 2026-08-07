@@ -260,26 +260,44 @@ rules:
   - rule_id: SEMANTICA_MESSAGE_COMPLIANCE
     layer: semantica
     default_severity: error_de_marca
-    implementable: false
-    description: "El mensaje comunicado (texto OCR + transcript) cumple los lineamientos del brief."
+    implementable: true
+    description: >-
+      El mensaje comunicado (OCR de frames + transcript de audio) cumple los
+      mensajes clave del brief (brief.semantic.key_messages), evaluado por un
+      LLM (Gemini 3.6 Flash, Notebook 04). Si el brief no especifica
+      key_messages, Notebook 04 no llama al LLM para esta dimensión y
+      semantic.message_compliance queda ausente -> NOT_EVALUATED
+      (deliberadamente NO es un PASS informativo como CTA/color: evita pagar
+      una llamada de LLM sin referencia contra la cual comparar).
     requires_fields: ["semantic.message_compliance"]
     requires_profile_fields: []
-    not_evaluated_reason: "no_semantic_pipeline (requiere LLM comparando OCR+transcript contra el brief)"
+    check_fn: check_semantic_message_compliance
 
   - rule_id: SEMANTICA_BRAND_POSITIONING
     layer: semantica
     default_severity: error_de_marca
-    implementable: false
-    description: "El posicionamiento de marca comunicado es consistente con el brief."
+    implementable: true
+    description: >-
+      El posicionamiento de marca comunicado (OCR+transcript) es consistente
+      con brief.semantic.brand_positioning_statement, evaluado por LLM
+      (Gemini 3.6 Flash, Notebook 04). Si el brief no especifica ese
+      statement, NOT_EVALUATED por el mismo motivo que
+      SEMANTICA_MESSAGE_COMPLIANCE.
     requires_fields: ["semantic.brand_positioning"]
     requires_profile_fields: []
-    not_evaluated_reason: "no_semantic_pipeline"
+    check_fn: check_semantic_brand_positioning
 
   - rule_id: SEMANTICA_GUIDELINE_COMPLIANCE
     layer: semantica
     default_severity: error_de_marca
-    implementable: false
-    description: "Cumplimiento general de lineamientos de marca/legales del brief."
+    implementable: true
+    description: >-
+      Cumplimiento general de lineamientos de marca/legales del brief
+      (brief.semantic.guidelines_text y, si aplica,
+      brief.legal.disclaimer_required/disclaimer_text_contains), evaluado
+      por LLM (Gemini 3.6 Flash, Notebook 04). Si el brief no configura ni
+      guidelines_text ni legal.disclaimer_required, NOT_EVALUATED por el
+      mismo motivo que SEMANTICA_MESSAGE_COMPLIANCE.
     requires_fields: ["semantic.guideline_compliance"]
     requires_profile_fields: []
-    not_evaluated_reason: "no_semantic_pipeline"
+    check_fn: check_semantic_guideline_compliance
